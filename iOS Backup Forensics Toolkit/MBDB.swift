@@ -25,6 +25,7 @@ class MBDB: NSObject {
     }
 
     func recreateFilesytem() {
+        manager.createDirectoryAtPath(outputDirectory + "/Original/", withIntermediateDirectories: true, attributes: nil, error: nil)
         readHeader()
         while (handleRecord()) {
 

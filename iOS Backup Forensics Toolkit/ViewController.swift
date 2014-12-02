@@ -10,6 +10,9 @@ import Cocoa
 
 class ViewController: NSViewController {
 
+    //For debugging only
+    let shouldRecreateFileSystem = false
+
     let defaultManager = NSFileManager.defaultManager()
 
     var backupDirectory = ""
@@ -55,23 +58,39 @@ class ViewController: NSViewController {
     }
 
     @IBAction func startAnalyzing(sender: AnyObject) {
+
         //DEBUG
-//        analyzeInfoPlist()
-//        recreateFileSystem()
-        analyze()
+        if (self.shouldRecreateFileSystem)
+        {
+            analyzeInfoPlist()
+            recreateFileSystem()
+        }
+
+        else
+        {
+            analyze()
+        }
     }
 
     func analyze() {
         sectionLabel.stringValue = "Analyzing"
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+
+            var outDir = self.outputDirectory
             //DEBUG
-            let investigator = Forensics(outputDirectory: self.outputDirectory + "/<Unknown>")
+            if (!self.shouldRecreateFileSystem)
+            {
+                outDir += "/<Unknown>"
+            }
 
-
-//            let investigator = Forensics(outputDirectory: self.outputDirectory)
+            let investigator = Forensics(outputDirectory: outDir)
 
             investigator.beginAnalyzing()
+
+            dispatch_async(dispatch_get_main_queue(), {
+                self.sectionLabel.stringValue = "Finished"
+            })
         })
 
 
@@ -85,6 +104,7 @@ class ViewController: NSViewController {
             dispatch_async(dispatch_get_main_queue(), {
                 self.taskLabel.stringValue = "Finished recreating file system"
             })
+            self.analyze()
         })
     }
 
