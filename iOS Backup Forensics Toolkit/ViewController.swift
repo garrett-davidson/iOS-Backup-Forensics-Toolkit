@@ -90,6 +90,7 @@ class ViewController: NSViewController {
 
             dispatch_async(dispatch_get_main_queue(), {
                 self.sectionLabel.stringValue = "Finished"
+                self.taskLabel.stringValue = ""
             })
         })
 
@@ -99,6 +100,7 @@ class ViewController: NSViewController {
     func recreateFileSystem() {
         sectionLabel.stringValue = "Recreating file system"
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+            self.taskLabel.stringValue = "Copying files"
             let manifest = MBDB(path: self.backupDirectory, outDirectory: self.outputDirectory)
             manifest.recreateFilesytem()
             dispatch_async(dispatch_get_main_queue(), {

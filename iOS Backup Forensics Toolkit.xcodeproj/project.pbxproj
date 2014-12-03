@@ -13,6 +13,7 @@
 		0D1019C11A2B7DD100E4D082 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D1019C01A2B7DD100E4D082 /* Images.xcassets */; };
 		0D1019C41A2B7DD100E4D082 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0D1019C21A2B7DD100E4D082 /* Main.storyboard */; };
 		0D1019D01A2B7DD100E4D082 /* iOS_Backup_Forensics_ToolkitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1019CF1A2B7DD100E4D082 /* iOS_Backup_Forensics_ToolkitTests.swift */; };
+		0D4F6CED1A2F914E00D57754 /* ForensicsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4F6CEC1A2F914E00D57754 /* ForensicsModule.swift */; };
 		0DA27EA01A2BAA8C00D61EC0 /* MBDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA27E9F1A2BAA8C00D61EC0 /* MBDB.swift */; };
 		0DCCE52A1A2CED3F009C72FF /* Forensics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCCE5291A2CED3F009C72FF /* Forensics.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +39,7 @@
 		0D1019C91A2B7DD100E4D082 /* iOS Backup Forensics ToolkitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "iOS Backup Forensics ToolkitTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D1019CE1A2B7DD100E4D082 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0D1019CF1A2B7DD100E4D082 /* iOS_Backup_Forensics_ToolkitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS_Backup_Forensics_ToolkitTests.swift; sourceTree = "<group>"; };
+		0D4F6CEC1A2F914E00D57754 /* ForensicsModule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForensicsModule.swift; sourceTree = "<group>"; };
 		0D506D781A2BD64E003CEECE /* iOS-Backup-Forensics-Toolkit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iOS-Backup-Forensics-Toolkit-Bridging-Header.h"; sourceTree = "<group>"; };
 		0DA27E9F1A2BAA8C00D61EC0 /* MBDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MBDB.swift; sourceTree = "<group>"; };
 		0DCCE5291A2CED3F009C72FF /* Forensics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Forensics.swift; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 				0D1019B91A2B7DD100E4D082 /* AppDelegate.swift */,
 				0D1019BB1A2B7DD100E4D082 /* ViewController.swift */,
 				0DCCE5291A2CED3F009C72FF /* Forensics.swift */,
+				0D4F6CEC1A2F914E00D57754 /* ForensicsModule.swift */,
 				0D1019C01A2B7DD100E4D082 /* Images.xcassets */,
 				0D1019C21A2B7DD100E4D082 /* Main.storyboard */,
 				0DA27E9F1A2BAA8C00D61EC0 /* MBDB.swift */,
@@ -219,6 +222,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D4F6CED1A2F914E00D57754 /* ForensicsModule.swift in Sources */,
 				0D1019BC1A2B7DD100E4D082 /* ViewController.swift in Sources */,
 				0D1019BA1A2B7DD100E4D082 /* AppDelegate.swift in Sources */,
 				0DA27EA01A2BAA8C00D61EC0 /* MBDB.swift in Sources */,

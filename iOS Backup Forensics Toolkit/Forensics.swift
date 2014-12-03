@@ -429,9 +429,9 @@ class Forensics {
         {
             oauthTokens[service]![user!] = Dictionary<String, [String]>()
         }
-        if (oauthTokens[service]![user!]![service] == nil)
+        if (oauthTokens[service]![user!]![identifier] == nil)
         {
-            oauthTokens[service]![user!]![service] = [String]()
+            oauthTokens[service]![user!]![identifier] = [String]()
         }
 
         oauthTokens[service]![user!]![identifier]!.append(token)
