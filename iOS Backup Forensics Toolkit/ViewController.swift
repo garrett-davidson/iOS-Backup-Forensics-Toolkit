@@ -11,7 +11,7 @@ import Cocoa
 class ViewController: NSViewController {
 
     //For debugging only
-    let shouldRecreateFileSystem = false
+    let shouldRecreateFileSystem = true
 
     let defaultManager = NSFileManager.defaultManager()
 
