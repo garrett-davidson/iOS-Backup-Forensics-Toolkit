@@ -13,9 +13,8 @@
 		0D1019C11A2B7DD100E4D082 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D1019C01A2B7DD100E4D082 /* Images.xcassets */; };
 		0D1019C41A2B7DD100E4D082 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0D1019C21A2B7DD100E4D082 /* Main.storyboard */; };
 		0D1019D01A2B7DD100E4D082 /* iOS_Backup_Forensics_ToolkitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1019CF1A2B7DD100E4D082 /* iOS_Backup_Forensics_ToolkitTests.swift */; };
-		0D4F6CED1A2F914E00D57754 /* ForensicsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4F6CEC1A2F914E00D57754 /* ForensicsModule.swift */; };
+		0D1F33461A2FC7220089CBD9 /* ForensicsModuleFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F33411A2FBA570089CBD9 /* ForensicsModuleFramework.framework */; };
 		0DA27EA01A2BAA8C00D61EC0 /* MBDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA27E9F1A2BAA8C00D61EC0 /* MBDB.swift */; };
-		0DCCE52A1A2CED3F009C72FF /* Forensics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCCE5291A2CED3F009C72FF /* Forensics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,6 +24,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = 0D1019B31A2B7DD100E4D082;
 			remoteInfo = "iOS Backup Forensics Toolkit";
+		};
+		0D1F32E01A2FB8BB0089CBD9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0D1F32DC1A2FB8BA0089CBD9 /* Default-Modules.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0D1F32D21A2FB8BA0089CBD9;
+			remoteInfo = "Default-Modules";
+		};
+		0D1F33401A2FBA570089CBD9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0D1F333B1A2FBA560089CBD9 /* ForensicsModuleFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0D1F331F1A2FBA560089CBD9;
+			remoteInfo = ForensicsModuleFramework;
+		};
+		0D1F33421A2FBA570089CBD9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0D1F333B1A2FBA560089CBD9 /* ForensicsModuleFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0D1F332A1A2FBA560089CBD9;
+			remoteInfo = ForensicsModuleFrameworkTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -39,10 +59,10 @@
 		0D1019C91A2B7DD100E4D082 /* iOS Backup Forensics ToolkitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "iOS Backup Forensics ToolkitTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D1019CE1A2B7DD100E4D082 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0D1019CF1A2B7DD100E4D082 /* iOS_Backup_Forensics_ToolkitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS_Backup_Forensics_ToolkitTests.swift; sourceTree = "<group>"; };
-		0D4F6CEC1A2F914E00D57754 /* ForensicsModule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForensicsModule.swift; sourceTree = "<group>"; };
+		0D1F32DC1A2FB8BA0089CBD9 /* Default-Modules.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Default-Modules.xcodeproj"; path = "Default-Modules/Default-Modules.xcodeproj"; sourceTree = "<group>"; };
+		0D1F333B1A2FBA560089CBD9 /* ForensicsModuleFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ForensicsModuleFramework.xcodeproj; path = "iOS Backup Forensics Toolkit/ForensicsModuleFramework/ForensicsModuleFramework.xcodeproj"; sourceTree = "<group>"; };
 		0D506D781A2BD64E003CEECE /* iOS-Backup-Forensics-Toolkit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iOS-Backup-Forensics-Toolkit-Bridging-Header.h"; sourceTree = "<group>"; };
 		0DA27E9F1A2BAA8C00D61EC0 /* MBDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MBDB.swift; sourceTree = "<group>"; };
-		0DCCE5291A2CED3F009C72FF /* Forensics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Forensics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D1F33461A2FC7220089CBD9 /* ForensicsModuleFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +87,7 @@
 		0D1019AB1A2B7DD100E4D082 = {
 			isa = PBXGroup;
 			children = (
+				0D1F333B1A2FBA560089CBD9 /* ForensicsModuleFramework.xcodeproj */,
 				0D1019B61A2B7DD100E4D082 /* iOS Backup Forensics Toolkit */,
 				0D1019CC1A2B7DD100E4D082 /* iOS Backup Forensics ToolkitTests */,
 				0D1019B51A2B7DD100E4D082 /* Products */,
@@ -86,14 +108,13 @@
 			children = (
 				0D1019B91A2B7DD100E4D082 /* AppDelegate.swift */,
 				0D1019BB1A2B7DD100E4D082 /* ViewController.swift */,
-				0DCCE5291A2CED3F009C72FF /* Forensics.swift */,
-				0D4F6CEC1A2F914E00D57754 /* ForensicsModule.swift */,
 				0D1019C01A2B7DD100E4D082 /* Images.xcassets */,
 				0D1019C21A2B7DD100E4D082 /* Main.storyboard */,
 				0DA27E9F1A2BAA8C00D61EC0 /* MBDB.swift */,
 				0D506D781A2BD64E003CEECE /* iOS-Backup-Forensics-Toolkit-Bridging-Header.h */,
 				0D1019BD1A2B7DD100E4D082 /* iOS_Backup_Forensics_Toolkit.xcdatamodeld */,
 				0D1019B71A2B7DD100E4D082 /* Supporting Files */,
+				0D1F32DC1A2FB8BA0089CBD9 /* Default-Modules.xcodeproj */,
 			);
 			path = "iOS Backup Forensics Toolkit";
 			sourceTree = "<group>";
@@ -121,6 +142,23 @@
 				0D1019CE1A2B7DD100E4D082 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0D1F32DD1A2FB8BA0089CBD9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0D1F32E11A2FB8BB0089CBD9 /* Default-Modules.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0D1F333C1A2FBA560089CBD9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0D1F33411A2FBA570089CBD9 /* ForensicsModuleFramework.framework */,
+				0D1F33431A2FBA570089CBD9 /* ForensicsModuleFrameworkTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -190,6 +228,16 @@
 			mainGroup = 0D1019AB1A2B7DD100E4D082;
 			productRefGroup = 0D1019B51A2B7DD100E4D082 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 0D1F32DD1A2FB8BA0089CBD9 /* Products */;
+					ProjectRef = 0D1F32DC1A2FB8BA0089CBD9 /* Default-Modules.xcodeproj */;
+				},
+				{
+					ProductGroup = 0D1F333C1A2FBA560089CBD9 /* Products */;
+					ProjectRef = 0D1F333B1A2FBA560089CBD9 /* ForensicsModuleFramework.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				0D1019B31A2B7DD100E4D082 /* iOS Backup Forensics Toolkit */,
@@ -197,6 +245,30 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		0D1F32E11A2FB8BB0089CBD9 /* Default-Modules.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Default-Modules.bundle";
+			remoteRef = 0D1F32E01A2FB8BB0089CBD9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0D1F33411A2FBA570089CBD9 /* ForensicsModuleFramework.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ForensicsModuleFramework.framework;
+			remoteRef = 0D1F33401A2FBA570089CBD9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0D1F33431A2FBA570089CBD9 /* ForensicsModuleFrameworkTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ForensicsModuleFrameworkTests.xctest;
+			remoteRef = 0D1F33421A2FBA570089CBD9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		0D1019B21A2B7DD100E4D082 /* Resources */ = {
@@ -222,12 +294,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0D4F6CED1A2F914E00D57754 /* ForensicsModule.swift in Sources */,
 				0D1019BC1A2B7DD100E4D082 /* ViewController.swift in Sources */,
 				0D1019BA1A2B7DD100E4D082 /* AppDelegate.swift in Sources */,
 				0DA27EA01A2BAA8C00D61EC0 /* MBDB.swift in Sources */,
 				0D1019BF1A2B7DD100E4D082 /* iOS_Backup_Forensics_Toolkit.xcdatamodeld in Sources */,
-				0DCCE52A1A2CED3F009C72FF /* Forensics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -25,7 +25,7 @@ class MBDB: NSObject {
     }
 
     func recreateFilesytem() {
-        manager.createDirectoryAtPath(outputDirectory + "/Original/", withIntermediateDirectories: true, attributes: nil, error: nil)
+        manager.createDirectoryAtPath(outputDirectory, withIntermediateDirectories: true, attributes: nil, error: nil)
         readHeader()
         while (handleRecord()) {
 
@@ -95,7 +95,7 @@ class MBDB: NSObject {
             }
         }
 
-        let newURL = NSURL(fileURLWithPath: "\(outputDirectory)/Original/\(topFolder)/\(path)")!
+        let newURL = NSURL(fileURLWithPath: "\(outputDirectory)/\(topFolder)/\(path)")!
 
         return newURL
     }
