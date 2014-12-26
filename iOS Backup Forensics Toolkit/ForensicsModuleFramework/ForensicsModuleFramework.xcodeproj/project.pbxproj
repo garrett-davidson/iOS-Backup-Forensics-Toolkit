@@ -11,6 +11,7 @@
 		0D1F332B1A2FBA560089CBD9 /* ForensicsModuleFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F331F1A2FBA560089CBD9 /* ForensicsModuleFramework.framework */; };
 		0D1F33321A2FBA560089CBD9 /* ForensicsModuleFrameworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1F33311A2FBA560089CBD9 /* ForensicsModuleFrameworkTests.swift */; };
 		0D1F33451A2FBA680089CBD9 /* ForensicsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1F33441A2FBA680089CBD9 /* ForensicsModule.swift */; };
+		0D2226301A3E529500B09664 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D22262F1A3E529500B09664 /* libsqlite3.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		0D1F33301A2FBA560089CBD9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0D1F33311A2FBA560089CBD9 /* ForensicsModuleFrameworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForensicsModuleFrameworkTests.swift; sourceTree = "<group>"; };
 		0D1F33441A2FBA680089CBD9 /* ForensicsModule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForensicsModule.swift; sourceTree = "<group>"; };
+		0D22262F1A3E529500B09664 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D2226301A3E529500B09664 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,6 +58,7 @@
 		0D1F33151A2FBA560089CBD9 = {
 			isa = PBXGroup;
 			children = (
+				0D22262F1A3E529500B09664 /* libsqlite3.dylib */,
 				0D1F33211A2FBA560089CBD9 /* ForensicsModuleFramework */,
 				0D1F332E1A2FBA560089CBD9 /* ForensicsModuleFrameworkTests */,
 				0D1F33201A2FBA560089CBD9 /* Products */,
@@ -401,6 +405,7 @@
 				0D1F33371A2FBA560089CBD9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0D1F33381A2FBA560089CBD9 /* Build configuration list for PBXNativeTarget "ForensicsModuleFrameworkTests" */ = {
 			isa = XCConfigurationList;
@@ -409,6 +414,7 @@
 				0D1F333A1A2FBA560089CBD9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class ForensicsModule {
+@objc public class ForensicsModule {
 
     public let manager = NSFileManager.defaultManager()
 
@@ -19,17 +19,18 @@ public class ForensicsModule {
     public enum Services: String {
         case Facebook = "Facebook"
         case Twitter = "Twitter"
+        case Tumblr = "Tumblr"
     }
 
-    internal var oauthTokens = Dictionary<String, Dictionary<String, Dictionary<String, [String]>>>()
-    internal var passwords = Dictionary<String, String>()
+    public var oauthTokens = Dictionary<String, Dictionary<String, Dictionary<String, [String]>>>()
+    public var passwords = Dictionary<String, String>()
 
     public init(bundle: ForensicsBundleProtocol) {
         self.bundle = bundle
     }
 
     public func pathForApplication(#identifier: String) -> String? {
-        let path = "\(bundle.originalDirectory)Applications/\(identifier)/"
+        let path = "\(bundle.originalDirectory)/Applications/\(identifier)/"
 
         if (manager.fileExistsAtPath(path)) {
             return path
@@ -118,13 +119,13 @@ public class ForensicsModule {
         return ""
     }
 
-    private func pullFacebookAccessTokenFromApp(identifier: String)
+    public func pullFacebookAccessTokenFromApp(#identifier: String)
     {
         //Can't use default value because path depends on identifier
-        pullFacebookAccessTokenFromApp(identifier, customPath: nil)
+        pullFacebookAccessTokenFromApp(identifier: identifier, customPath: nil)
     }
 
-    public func pullFacebookAccessTokenFromApp(identifier: String, customPath: String?) {
+    public func pullFacebookAccessTokenFromApp(#identifier: String, customPath: String?) {
         var path = "Library/Preferences/\(identifier).plist"
 
         if (customPath != nil)
@@ -154,8 +155,13 @@ public class ForensicsModule {
         passwords[account] = password
     }
 
-    public func description() -> String {
-        return "\(self.bundle): \(self.name)"
+    public func pullXMLValue(path:String, tag: String) -> String? {
+        let xmlString = NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil)
+
+        let startIndex = xmlString!.rangeOfString("<\(tag)>").location
+        let endIndex = xmlString!.rangeOfString("</\(tag)>").location
+
+        return xmlString!.substringWithRange(NSMakeRange(startIndex, endIndex-startIndex))
     }
 }
 
@@ -169,6 +175,8 @@ public class ForensicsModule {
 }
 
 @objc public protocol ForensicsModuleProtocol {
+    var oauthTokens: Dictionary<String, Dictionary<String, Dictionary<String, [String]>>> {get}
+    var passwords: Dictionary<String, String> {get}
     var name: String {get}
     var appIdentifiers: [String] {get}
     var bundle: ForensicsBundleProtocol {get}

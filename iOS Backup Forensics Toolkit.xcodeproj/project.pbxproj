@@ -14,6 +14,7 @@
 		0D1019C41A2B7DD100E4D082 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0D1019C21A2B7DD100E4D082 /* Main.storyboard */; };
 		0D1019D01A2B7DD100E4D082 /* iOS_Backup_Forensics_ToolkitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1019CF1A2B7DD100E4D082 /* iOS_Backup_Forensics_ToolkitTests.swift */; };
 		0D1F33461A2FC7220089CBD9 /* ForensicsModuleFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D1F33411A2FBA570089CBD9 /* ForensicsModuleFramework.framework */; };
+		0D22262C1A3A29A700B09664 /* Default-Modules.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0D1F32E11A2FB8BB0089CBD9 /* Default-Modules.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0DA27EA01A2BAA8C00D61EC0 /* MBDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA27E9F1A2BAA8C00D61EC0 /* MBDB.swift */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +48,19 @@
 			remoteInfo = ForensicsModuleFrameworkTests;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0D2226281A3A298D00B09664 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0D22262C1A3A29A700B09664 /* Default-Modules.bundle in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0D1019B41A2B7DD100E4D082 /* iOS Backup Forensics Toolkit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Backup Forensics Toolkit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -171,6 +185,7 @@
 				0D1019B01A2B7DD100E4D082 /* Sources */,
 				0D1019B11A2B7DD100E4D082 /* Frameworks */,
 				0D1019B21A2B7DD100E4D082 /* Resources */,
+				0D2226281A3A298D00B09664 /* CopyFiles */,
 			);
 			buildRules = (
 			);

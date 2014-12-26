@@ -16,6 +16,7 @@
 		0D1F32D61A2FB8BA0089CBD9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0D1F32E21A2FB8D00089CBD9 /* DefaultModules.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultModules.swift; sourceTree = "<group>"; };
 		0D1F33471A2FC7360089CBD9 /* ForensicsModuleFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ForensicsModuleFramework.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/iOS_Backup_Forensics_Toolkit-affiakrgssjgszenwbnxcrvjadvs/Build/Products/Debug/ForensicsModuleFramework.framework"; sourceTree = "<group>"; };
+		0D2226311A3E649000B09664 /* Default-Modules-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Default-Modules-Bridging-Header.h"; path = "Default-Modules/Default-Modules-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +34,7 @@
 		0D1F32C91A2FB8BA0089CBD9 = {
 			isa = PBXGroup;
 			children = (
+				0D2226311A3E649000B09664 /* Default-Modules-Bridging-Header.h */,
 				0D1F33471A2FC7360089CBD9 /* ForensicsModuleFramework.framework */,
 				0D1F32D41A2FB8BA0089CBD9 /* Default-Modules */,
 				0D1F32D31A2FB8BA0089CBD9 /* Products */,
@@ -225,6 +227,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Default-Modules/Default-Modules-Bridging-Header.h";
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
@@ -241,6 +244,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Default-Modules/Default-Modules-Bridging-Header.h";
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;

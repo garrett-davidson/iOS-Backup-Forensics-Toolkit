@@ -15,9 +15,9 @@ class ViewController: NSViewController {
 
     let manager = NSFileManager.defaultManager()
 
-    var backupDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/Downloads/DownloadedBackups/67.87.118.64/fbf4492b6d1a270fa0f815c781b2f40a6062ba66/" : ""
-    var originalDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/Downloads/untitled folder 2/<Unknown>/Original/" : ""
-    var interestingDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/Downloads/untitled folder 2/<Unknown>/Interesting/" :""
+    var backupDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/GenTest/Downloads/untitled folder 2/MobileSync/\(ClassVariables.debuggingDeviceName)" : ""
+    var originalDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/GenTest/Downloads/untitled folder 2/MobileSync/\(ClassVariables.debuggingDeviceName)/Original/" : ""
+    var interestingDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/GenTest/Downloads/untitled folder 2/MobileSync/\(ClassVariables.debuggingDeviceName)/Interesting/" :""
     var bundleDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/Library/Developer/Xcode/DerivedData/iOS_Backup_Forensics_Toolkit-affiakrgssjgszenwbnxcrvjadvs/Build/Products/Debug/" : ""
 
     struct ClassVariables
@@ -26,6 +26,7 @@ class ViewController: NSViewController {
         static var oauthTokens = Dictionary<String, Dictionary<String, Dictionary<String, [String]>>>()
         static var passwords = Dictionary<String, String>()
         static let debugging = true
+        static let debuggingDeviceName = "<Unknown>"
     }
 
     @IBOutlet weak var backupDirectoryField: NSTextField!
@@ -82,7 +83,6 @@ class ViewController: NSViewController {
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         {
-            self.loadBundles()
 
             if (!ViewController.ClassVariables.debugging)
             {
@@ -99,20 +99,30 @@ class ViewController: NSViewController {
     }
 
     func loadBundles() {
-        let bundleDirectoryPaths = manager.contentsOfDirectoryAtPath(bundleDirectory, error: nil) as [String]
+        let bundles = retrieveBundles(NSBundle.mainBundle().builtInPlugInsPath!) + retrieveBundles(bundleDirectory)
+
+        for bundle in bundles {
+            if let bundleClass: AnyClass = bundle.principalClass
+            {
+                ViewController.ClassVariables.modules += bundleClass.loadBundleWithDirectories(originalDirectory: originalDirectory, interestingDirectory: interestingDirectory).modules
+            }
+        }
+    }
+
+    func retrieveBundles(path: String) -> [NSBundle] {
+        let bundleDirectoryPaths = path == "" ? [String]() : manager.contentsOfDirectoryAtPath(path, error: nil) as [String]
+
+        var bundles = [NSBundle]()
         for bundlePath in bundleDirectoryPaths
         {
             if (bundlePath.rangeOfString(".bundle") != nil)
             {
-                let loadedBundle = NSBundle(path: bundleDirectory + "/" + bundlePath)!
+                let loadedBundle = NSBundle(path: path + "/" + bundlePath)!
 
                 //for some reason this causes a segmentation fault when using ForensicsBundleProtocol.Protocol
 //                if let bundleClass = loadedBundle.principalClass as? ForensicsBundleProtocol.Protocol
                 
-                if let bundleClass: AnyClass = loadedBundle.principalClass
-                {
-                    ViewController.ClassVariables.modules += bundleClass.loadBundleWithDirectories(originalDirectory: originalDirectory, interestingDirectory: interestingDirectory).modules
-                }
+                bundles.append(loadedBundle)
             }
         }
 
@@ -122,13 +132,12 @@ class ViewController: NSViewController {
 //            MainViewController.ClassVariables.modules = [ForensicsModuleProtocol]()
         })
 
-        while (ViewController.ClassVariables.modules.count == 0)
-        {
-            NSThread.sleepForTimeInterval(1)
-        }
+
+        return bundles
     }
 
     func analyze() {
+        self.loadBundles()
         dispatch_async(dispatch_get_main_queue(),
         {
             self.sectionLabel.stringValue = "Analyzing"
@@ -147,8 +156,17 @@ class ViewController: NSViewController {
     func beginAnalyzing() {
         //run all loaded modules
 
+        dispatch_async(dispatch_get_main_queue(),
+        {
+            self.sectionLabel.stringValue = "Analyzing"
+        })
+
         for module in ViewController.ClassVariables.modules
         {
+            dispatch_async(dispatch_get_main_queue(),
+            {
+                self.taskLabel.stringValue = module.name
+            })
             module.analyze()
         }
 
@@ -158,6 +176,38 @@ class ViewController: NSViewController {
 
     func finishAnalyzing() {
         //Is there a way to do this without creating a new NSDictionary?
+
+
+        for module in ViewController.ClassVariables.modules {
+
+            //pull oauthTokens from modules
+            for site in module.oauthTokens.keys {
+                for user in module.oauthTokens[site]!.keys {
+                    for (identifier, identifierValues) in module.oauthTokens[site]![user]! {
+                        if (ClassVariables.oauthTokens[site] == nil) {
+                            ClassVariables.oauthTokens[site] = Dictionary<String, Dictionary<String, [String]>>()
+                        }
+                        if (ClassVariables.oauthTokens[site]![user] == nil) {
+                            ClassVariables.oauthTokens[site]![user] = Dictionary<String, [String]>()
+                        }
+
+                        if (ClassVariables.oauthTokens[site]![user]![identifier] == nil) {
+                            ClassVariables.oauthTokens[site]![user]![identifier] = identifierValues
+                        }
+
+                        else {
+                            ClassVariables.oauthTokens[site]![user]![identifier]! += identifierValues
+                        }
+                    }
+                }
+            }
+
+            //pull passwords from modules
+            //TODO: check for overwriting
+            for (account, password) in module.passwords {
+                ClassVariables.passwords[account] = password
+            }
+        }
 
         if (ClassVariables.oauthTokens.count > 0)
         {
@@ -186,6 +236,7 @@ class ViewController: NSViewController {
     }
 
     func analyzeInfoPlist() {
+        //TODO: catch no info.plist error
         sectionLabel.stringValue = "Copying Info.plist"
 
         taskLabel.stringValue = "Reading Info.plist"

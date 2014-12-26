@@ -9,7 +9,7 @@
 import Foundation
 import ForensicsModuleFramework
 
-@objc class DefaultModulesBundle: ForensicsBundleProtocol {
+class DefaultModulesBundle: ForensicsBundleProtocol {
     let name = "Default"
     let originalDirectory: String
     let interestingDirectory: String
@@ -34,7 +34,19 @@ import ForensicsModuleFramework
             Pandora(bundle: bundle),
             SnapGrab(bundle: bundle),
             Viggle(bundle: bundle),
-            FacebookSDKTokens(bundle: bundle)
+            FacebookSDKTokens(bundle: bundle),
+            SMSAttachments(bundle: bundle),
+            Accounts(bundle: bundle),
+            Contacts(bundle: bundle),
+            Calendar(bundle: bundle),
+            PhoneRecords(bundle: bundle),
+            HiddenPhoto(bundle: bundle),
+            Tumblr(bundle: bundle),
+            Skype(bundle: bundle),
+            Instagram(bundle: bundle),
+            Viber(bundle: bundle),
+            InstaCrop(bundle: bundle),
+            VoiceRecordings(bundle: bundle)
         ]
 
         return bundle
@@ -47,7 +59,213 @@ import ForensicsModuleFramework
 
 }
 
-@objc class MobileMail: ForensicsModule, ForensicsModuleProtocol {
+//Facebook from HomeDomain
+//Get full name, fb email, fb profile link
+
+//Check Candy Crush for fb oauth
+
+//try snapchat with tokens
+
+class InstaCrop: ForensicsModule, ForensicsModuleProtocol {
+    let name = "InstaCrop"
+    let appIdentifiers = ["com.six8t.InstaCropFree"]
+
+    func analyze() {
+        let appPath = pathForApplication(identifier: "com.six8t.InstaCropFree")
+
+        if (appPath != nil)
+        {
+            let interestingPath = bundle.interestingDirectory + "/InstaCrop"
+            manager.createDirectoryAtPath(interestingPath, withIntermediateDirectories: false, attributes: nil, error: nil)
+            manager.copyItemAtPath(appPath! + "/Documents", toPath: interestingPath + "/Documents", error: nil)
+        }
+    }
+}
+
+class Viber: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Viber"
+    let appIdentifiers = ["com.viber"]
+
+    func analyze() {
+        //sqlite pull contact
+    }
+}
+
+class Instagram: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Instagram"
+    let appIdentifiers = ["com.burbn.instagram"]
+
+    func analyze() {
+        let appPath = pathForApplication(identifier: "com.burbn.instagram")
+
+        if (appPath != nil)
+        {
+            let interestingPath = bundle.interestingDirectory + "/Instagram"
+            manager.createDirectoryAtPath(interestingPath, withIntermediateDirectories: false, attributes: nil, error: nil)
+            manager.copyItemAtPath(appPath! + "/Documents/Inbox/", toPath: interestingPath + "/Inbox", error: nil)
+        }
+    }
+}
+
+class Skype: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Skype"
+    let appIdentifiers = ["com.skype.SkypeForiPad"]
+
+    func analyze() {
+        let appPath = pathForApplication(identifier: "com.skype.SkypeForiPad")
+        let dict = dictionaryFromPath("Library/Preferences/com.skype.SkypeForiPad", forIdentifier: "com.skype.SkypeForiPad")
+
+        if (dict != nil)
+        {
+            let username = dict!["SkypePrefsLastLoggedInSkypeName"] as String
+            let fullName = dict!["SkypePrefsLastLoggedInFullName"] as String
+            
+            let xmlPath = "\(appPath)/Library/Application Support/Skype/\(username)/config.xml"
+
+            let credentials3 = pullXMLValue(xmlPath, tag: "Credentials3")
+            let token = pullXMLValue(xmlPath, tag: "Token")
+
+            //pull sqlite stuff
+            //Username
+            //Real name
+            //Profile picture
+            //Emails
+            //Call history
+            //Chat history
+            //Contacts
+            //SMS
+            //Voicemails
+        }
+    }
+}
+
+class Tumblr: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Tumblr"
+    let appIdentifiers = ["com.tumblr.tumblr"]
+
+    func analyze() {
+        let dict = dictionaryFromPath("Library/Preferences/com.tumblr.tumblr.plist", forIdentifier: "com.tumblr.tumblr")
+
+        if (dict != nil)
+        {
+            for account in (dict!["UserDefaultAccountsInfo"] as Dictionary<String, NSDictionary>).keys {
+                saveToken(((dict!["UserDefaultAccountsInfo"]![account]! as NSDictionary)["OAuthToken"]! as String), fromApp: "com.tumblr.tumblr", forService: .Tumblr, forAccount: account)
+            }
+        }
+    }
+}
+
+class HiddenPhoto: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Private Photo (Calculator%)"
+    let appIdentifiers = ["com.aromdee.HiddenPhoto"]
+
+    func analyze() {
+        let hiddenPhotoPath = pathForApplication(identifier: "com.aromdee.HiddenPhoto")
+        if (hiddenPhotoPath != nil)
+        {
+            manager.createDirectoryAtPath(bundle.interestingDirectory + "/Private Photo", withIntermediateDirectories: false, attributes: nil, error: nil)
+            manager.copyItemAtPath(hiddenPhotoPath! + "/Documents/Album", toPath: bundle.interestingDirectory + "/Private Photo/Album", error: nil)
+        }
+    }
+}
+
+class VoiceRecordings: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Voice Recordings"
+    let appIdentifiers = ["N/A"]
+
+    func analyze() {
+        let path = bundle.originalDirectory + "MediaDomain/Media/Recordings/"
+        let outputPath = bundle.interestingDirectory + "Voice Recordings/"
+
+        let files = manager.contentsOfDirectoryAtPath(path, error: nil) as? [String]
+
+        if (files != nil)
+        {
+            for file in files!
+            {
+                if (file.rangeOfString(".m4a") != nil)
+                {
+                    if (!manager.fileExistsAtPath(outputPath))
+                    {
+                        manager.createDirectoryAtPath(outputPath, withIntermediateDirectories: false, attributes: nil, error: nil)
+                        manager.copyItemAtPath(path + "AssetManifest.plist", toPath: outputPath + "AssetManifest.plist", error: nil)
+                    }
+
+                    manager.copyItemAtPath(path + file, toPath: outputPath + file, error: nil)
+                }
+            }
+        }
+    }
+}
+//Voice recordings from MediaDomain/Media/Recordings
+
+//Keychain
+
+//Voicemail from HomeDomain
+
+//Text messages from HomeDomain
+
+//Safari Bookmarks from HomeDomain
+
+//Notes from HomeDomain
+
+//Recent emails from HomeDomain
+
+//Cookies from HomeDomain
+
+
+class PhoneRecords: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Phone Records"
+    let appIdentifiers = ["???"] //find phone identifier
+
+    func analyze() {
+        let path = bundle.interestingDirectory + "/Phone Records/"
+        manager.createDirectoryAtPath(path, withIntermediateDirectories: false, attributes: nil, error: nil)
+        manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/CallHistoryDB/CallHistory.storedata", toPath: path + "CallHistory.sqlite", error: nil)
+    }
+}
+
+class Calendar: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Calendar"
+    let appIdentifiers = ["???"] //find calender identifier
+
+    func analyze() {
+        manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/Calendar", toPath: bundle.interestingDirectory + "/Calendar", error: nil)
+    }
+}
+
+class Contacts: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Contacts"
+    let appIdentifiers = ["???"] //find contacts identifier
+
+    func analyze() {
+        manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/AddressBook/", toPath: bundle.interestingDirectory + "/Contacts/", error: nil)
+    }
+}
+
+class Accounts: ForensicsModule, ForensicsModuleProtocol {
+    let name = "Accounts"
+    let appIdentifiers = ["N/A"]
+
+    func analyze() {
+        manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/Accounts/", toPath: bundle.interestingDirectory + "/Accounts", error: nil)
+    }
+}
+
+class SMSAttachments: ForensicsModule, ForensicsModuleProtocol {
+    let name = "SMS Attachments"
+    let appIdentifiers = ["???"] //find messages identifier
+
+    func analyze() {
+//        manager.createDirectoryAtPath(bundle.interestingDirectory + "/SMS Attachments/", withIntermediateDirectories: false, attributes: nil, error: nil)
+        manager.copyItemAtPath(bundle.originalDirectory + "/MediaDomain/Library/SMS/Attachments/", toPath: bundle.interestingDirectory + "/SMS Attachments/", error: nil)
+    }
+}
+
+//Camera roll
+//Photostreams
+
+class MobileMail: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Mobile Mail"
     let appIdentifiers = ["com.apple.mobilemail"]
@@ -82,7 +300,7 @@ import ForensicsModuleFramework
 
 }
 
-@objc class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
+class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Mobile Safari"
     let appIdentifiers = ["com.apple.mobilesafari"]
@@ -148,7 +366,7 @@ import ForensicsModuleFramework
 
 }
 
-@objc class Twitter: ForensicsModule, ForensicsModuleProtocol {
+class Twitter: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Twitter"
     let appIdentifiers = ["com.atebits.Tweetie2"]
@@ -172,7 +390,7 @@ import ForensicsModuleFramework
 
 }
 
-@objc class BTSync: ForensicsModule, ForensicsModuleProtocol {
+class BTSync: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "BTSync"
     let appIdentifiers = ["com.bittorent.BitTorrent"]
@@ -193,7 +411,7 @@ import ForensicsModuleFramework
     }
 }
 
-@objc class PhotoVault: ForensicsModule, ForensicsModuleProtocol {
+class PhotoVault: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "com.apple.mobilemail"
     let appIdentifiers = ["com.apple.mobilemail"]
@@ -234,7 +452,7 @@ import ForensicsModuleFramework
     }
 }
 
-@objc class Evernote: ForensicsModule, ForensicsModuleProtocol {
+class Evernote: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Evernote"
     let appIdentifiers = ["com.evernote.iPhone.Evernote"]
@@ -255,7 +473,7 @@ import ForensicsModuleFramework
     }
 }
 
-@objc class GoogleChrome: ForensicsModule, ForensicsModuleProtocol {
+class GoogleChrome: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Google Chrome"
     let appIdentifiers = ["com.apple.mobilemail"]
@@ -266,7 +484,7 @@ import ForensicsModuleFramework
 
 }
 
-@objc class GroupMe: ForensicsModule, ForensicsModuleProtocol {
+class GroupMe: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "GroupMe"
     let appIdentifiers = ["com.groupme.iphone-app"]
@@ -287,11 +505,12 @@ import ForensicsModuleFramework
     }
 }
 
-@objc class Lumosity: ForensicsModule, ForensicsModuleProtocol {
+class Lumosity: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Lumosity"
     let appIdentifiers = ["com.apple.mobilemail"]
 
+    //TODO
     //grab oauth from documents/users/*/usercache.json
 
     func analyze() {
@@ -300,11 +519,12 @@ import ForensicsModuleFramework
 
 }
 
-@objc class Manything: ForensicsModule, ForensicsModuleProtocol {
+class Manything: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Manything"
     let appIdentifiers = ["com.apple.mobilemail"]
 
+    //TODO
     //grab token from com.manything.manything.plist
 
     func analyze() {
@@ -313,17 +533,17 @@ import ForensicsModuleFramework
 
 }
 
-@objc class NikePlus: ForensicsModule, ForensicsModuleProtocol {
+class NikePlus: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Nike Plus"
     let appIdentifiers = ["com.nike.nikeplus"]
 
     func analyze() {
-        pullFacebookAccessTokenFromApp("com.nike.nikeplus", customPath: "Library/Preferences/com.nike.nikeplus-gps.plist")
+        pullFacebookAccessTokenFromApp(identifier: "com.nike.nikeplus", customPath: "Library/Preferences/com.nike.nikeplus-gps.plist")
     }
 }
 
-@objc class Friendly: ForensicsModule, ForensicsModuleProtocol {
+class Friendly: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Friendly"
     let appIdentifiers = ["com.oecoway.friendlyLite"]
@@ -352,11 +572,12 @@ import ForensicsModuleFramework
     }
 }
 
-@objc class Pandora: ForensicsModule, ForensicsModuleProtocol {
+class Pandora: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Pandora"
-    let appIdentifiers = ["com.apple.mobilemail"]
+    let appIdentifiers = ["com.pandora"]
 
+    //TODO
     //pull auth token from Library/Pandora/store/*auth*
 
     func analyze() {
@@ -364,11 +585,13 @@ import ForensicsModuleFramework
     }
 }
 
+//TODO
 //com.regions.mbanking has AES key in Library/KonyDS/KBANKING_KEY
 
+//TODO
 //check com.reddit.alienblue password code
 
-@objc class SnapGrab: ForensicsModule, ForensicsModuleProtocol {
+class SnapGrab: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "SnapGrab"
     let appIdentifiers = ["com.apple.mobilemail"]
@@ -380,23 +603,29 @@ import ForensicsModuleFramework
     }
 }
 
-@objc class Viggle: ForensicsModule, ForensicsModuleProtocol {
+class Viggle: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Viggle"
     let appIdentifiers = ["net.functionxinc.oda"]
 
     func analyze() {
-        pullFacebookAccessTokenFromApp("net.functionxinc.oda", customPath: "Library/Preferences/net.functionxinc.oda-ota.plist")
+        pullFacebookAccessTokenFromApp(identifier: "net.functionxinc.oda", customPath: "Library/Preferences/net.functionxinc.oda-ota.plist")
     }
 }
 
 
-@objc class FacebookSDKTokens: ForensicsModule, ForensicsModuleProtocol {
+class FacebookSDKTokens: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "Facebook SDK Tokens"
     let appIdentifiers = ["*"]
 
     func analyze() {
-
+        let apps = manager.contentsOfDirectoryAtPath(bundle.originalDirectory + "/Applications/", error: nil) as? [String]
+        if (apps != nil)
+        {
+            for app in apps! {
+                pullFacebookAccessTokenFromApp(identifier: app)
+            }
+        }
     }
 }
