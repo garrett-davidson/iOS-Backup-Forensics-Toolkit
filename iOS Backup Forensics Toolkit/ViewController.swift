@@ -54,7 +54,7 @@ class ViewController: NSViewController {
         openPanel.directoryURL = NSURL(string: NSHomeDirectory() + "/Library/Application Support/MobileSync/Backup")
         openPanel.canChooseDirectories = true
         openPanel.canChooseFiles = false
-        if (openPanel.runModal() == NSOKButton) {
+        if (openPanel.runModal() == NSModalResponseOK) {
             backupDirectory = openPanel.URL!.path!
             backupDirectoryField.stringValue = backupDirectory
         }
@@ -64,7 +64,7 @@ class ViewController: NSViewController {
         let openPanel = NSOpenPanel()
         openPanel.canChooseDirectories = true
         openPanel.canChooseFiles = false
-        if (openPanel.runModal() == NSOKButton) {
+        if (openPanel.runModal() == NSModalResponseOK) {
             originalDirectory = openPanel.URL!.path!
             outputDirectoryField.stringValue = originalDirectory
         }
@@ -74,7 +74,7 @@ class ViewController: NSViewController {
         let openPanel = NSOpenPanel()
         openPanel.canChooseDirectories = true
         openPanel.canChooseFiles = false
-        if (openPanel.runModal() == NSOKButton) {
+        if (openPanel.runModal() == NSModalResponseOK) {
             bundleDirectory = openPanel.URL!.path!
             bundleDirectoryField.stringValue = bundleDirectory
         }

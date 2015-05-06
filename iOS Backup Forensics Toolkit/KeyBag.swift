@@ -194,7 +194,7 @@ class Keybag {
         }
 
         var classKeyBuffer = [UInt8](count:classKey.length, repeatedValue:0)
-        classKey.getBytes(&classKeyBuffer)
+        classKey.getBytes(&classKeyBuffer, length: classKey.length)
 
         return AESUnwrap(classKeyBuffer, wrapped:persistentKeyData)
     }

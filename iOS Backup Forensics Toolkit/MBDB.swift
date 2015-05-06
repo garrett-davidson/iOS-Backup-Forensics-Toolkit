@@ -130,7 +130,7 @@ class MBDB: NSObject {
                 let key = keybag!.unwrapKeyForClass(protectionClass, persistentKey: encryptionKey)
 
                 var keyBuffer = [UInt8](count: key.length, repeatedValue: 0)
-                key.getBytes(&keyBuffer)
+                key.getBytes(&keyBuffer, length:key.length)
                 var decryptedData = keybag!.AESDecryptCBC(cipherData, key: keyBuffer) as NSData
 
                 if decryptedData.length > fileSize
