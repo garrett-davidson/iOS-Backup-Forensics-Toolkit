@@ -16,12 +16,15 @@ class MBDB: NSObject {
     let backupDirectory: String
     let outputDirectory: String
 
-    init(path: String, outDirectory: String) {
+    let keybag: Keybag?
+
+    init(path: String, outDirectory: String, keybag: Keybag?) {
         inputStream = NSInputStream(fileAtPath: path + "/Manifest.mbdb")!
         inputStream.open()
 
         backupDirectory = path
         outputDirectory = outDirectory
+        self.keybag = keybag
     }
 
     func recreateFilesytem() {
@@ -38,9 +41,9 @@ class MBDB: NSObject {
 
         let domain = readString()
         let path = readString()
-        let linkTarget = readString()
-        let hash = readString()
-        let encryptionKey = readString()
+        let linkTarget = readBuffer()
+        let hash = readBuffer()
+        var encryptionKey = readBuffer()
 
         let mode = readInt(2)
         let inodeNumber = readInt(8)
@@ -66,7 +69,7 @@ class MBDB: NSObject {
 
         if fileSize > 0
         {
-            moveRecord(domain, path: path)
+            moveRecord(domain, path: path, protectionClass: protectionClass, encryptionKey: &encryptionKey, fileSize: fileSize)
         }
 
         return inputStream.hasBytesAvailable
@@ -100,7 +103,7 @@ class MBDB: NSObject {
         return newURL
     }
 
-    func moveRecord(domain: String, path:String) {
+    func moveRecord(domain: String, path:String, protectionClass: Int, inout encryptionKey: [UInt8], fileSize: Int) {
         let originalURL = NSURL(fileURLWithPath: backupDirectory + "/" + getFileName(domain: domain, path: path))!
         let url = getNewURL(domain: domain, path: path)
         let directoryURL = url.URLByDeletingLastPathComponent!
@@ -112,10 +115,37 @@ class MBDB: NSObject {
             println(error!)
         }
 
-        manager.copyItemAtURL(originalURL, toURL: url, error: &error)
+        //unencrypted backup
+        if keybag == nil
+        {
+            manager.copyItemAtURL(originalURL, toURL: url, error: &error)
+        }
 
-        //DEBUG
-//        manager.moveItemAtURL(originalURL, toURL: NSURL(fileURLWithPath: "/Users/garrettdavidson/GenTest/Used/" + originalURL.lastPathComponent)!, error: nil)
+        //encrypted backup
+        else
+        {
+            if let cipherData = NSData(contentsOfURL: originalURL)
+            {
+                encryptionKey.removeRange(0...3)
+                let key = keybag!.unwrapKeyForClass(protectionClass, persistentKey: encryptionKey)
+
+                var keyBuffer = [UInt8](count: key.length, repeatedValue: 0)
+                key.getBytes(&keyBuffer)
+                var decryptedData = keybag!.AESDecryptCBC(cipherData, key: keyBuffer) as NSData
+
+                if decryptedData.length > fileSize
+                {
+                    decryptedData = decryptedData.subdataWithRange(NSMakeRange(0, fileSize))
+                }
+
+                decryptedData.writeToURL(url, atomically: true)
+            }
+            else
+            {
+                println("Unable to find file:")
+                println(originalURL)
+            }
+        }
 
         if (error != nil)
         {
@@ -129,27 +159,22 @@ class MBDB: NSObject {
         //check header validity
     }
 
-    func readString() -> String {
-        let length = readInt(2)
-        if (length == 65535)
-        { return "" }
-        return readString(length)
+    func readString() -> String
+    {
+        let buffer = readBuffer()
+        let string = NSString(bytes: buffer, length: buffer.count, encoding: NSASCIIStringEncoding) as? String
+        return string == nil ? "" : string!
     }
 
-    func readString(length: Int) -> String {
-        var buffer = readBytes(length)
+    func readBuffer() -> [UInt8] {
+        let length = readInt(2)
+        if (length == 65535)
+        { return [UInt8]() }
+        return readBuffer(length)
+    }
 
-        let string = NSString(bytes: buffer, length: length, encoding: NSASCIIStringEncoding)
-
-        if (string != nil)
-        {
-            return string!
-        }
-
-        else
-        {
-            return ""
-        }
+    func readBuffer(length: Int) -> [UInt8] {
+        return readBytes(length)
     }
 
     func readInt(length: Int) -> Int {
@@ -187,6 +212,6 @@ extension String {
         for byte in digest {
             output.appendFormat("%02x", byte)
         }
-        return output
+        return output as String
     }
 }

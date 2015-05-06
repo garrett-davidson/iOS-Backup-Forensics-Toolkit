@@ -10,12 +10,12 @@ import Foundation
 import ForensicsModuleFramework
 
 class DefaultModulesBundle: ForensicsBundleProtocol {
-    let name = "Default"
-    let originalDirectory: String
-    let interestingDirectory: String
-    var modules: [ForensicsModuleProtocol] = [ForensicsModuleProtocol]()
+    @objc let name = "Default"
+    @objc let originalDirectory: String
+    @objc let interestingDirectory: String
+    @objc var modules: [ForensicsModuleProtocol] = [ForensicsModuleProtocol]()
 
-    class func loadBundleWithDirectories(#originalDirectory: String, interestingDirectory: String) -> ForensicsBundleProtocol {
+    @objc class func loadBundleWithDirectories(#originalDirectory: String, interestingDirectory: String) -> ForensicsBundleProtocol {
         let bundle = DefaultModulesBundle(originalDirectory: originalDirectory, interestingDirectory: interestingDirectory)
 
         bundle.modules = [
@@ -117,8 +117,8 @@ class Skype: ForensicsModule, ForensicsModuleProtocol {
 
         if (dict != nil)
         {
-            let username = dict!["SkypePrefsLastLoggedInSkypeName"] as String
-            let fullName = dict!["SkypePrefsLastLoggedInFullName"] as String
+            let username = dict!["SkypePrefsLastLoggedInSkypeName"] as! String
+            let fullName = dict!["SkypePrefsLastLoggedInFullName"] as! String
             
             let xmlPath = "\(appPath)/Library/Application Support/Skype/\(username)/config.xml"
 
@@ -148,8 +148,8 @@ class Tumblr: ForensicsModule, ForensicsModuleProtocol {
 
         if (dict != nil)
         {
-            for account in (dict!["UserDefaultAccountsInfo"] as Dictionary<String, NSDictionary>).keys {
-                saveToken(((dict!["UserDefaultAccountsInfo"]![account]! as NSDictionary)["OAuthToken"]! as String), fromApp: "com.tumblr.tumblr", forService: .Tumblr, forAccount: account)
+            for account in (dict!["UserDefaultAccountsInfo"] as! Dictionary<String, NSDictionary>).keys {
+                saveToken(((dict!["UserDefaultAccountsInfo"]![account]! as! NSDictionary)["OAuthToken"]! as! String), fromApp: "com.tumblr.tumblr", forService: .Tumblr, forAccount: account)
             }
         }
     }
@@ -257,7 +257,6 @@ class SMSAttachments: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["???"] //find messages identifier
 
     func analyze() {
-//        manager.createDirectoryAtPath(bundle.interestingDirectory + "/SMS Attachments/", withIntermediateDirectories: false, attributes: nil, error: nil)
         manager.copyItemAtPath(bundle.originalDirectory + "/MediaDomain/Library/SMS/Attachments/", toPath: bundle.interestingDirectory + "/SMS Attachments/", error: nil)
     }
 }
@@ -283,14 +282,14 @@ class MobileMail: ForensicsModule, ForensicsModuleProtocol {
 
         if (vipDict != nil)
         {
-            let vipArray = vipDict!["VIP-senders"] as Dictionary<String, NSDictionary>?
+            let vipArray = vipDict!["VIP-senders"] as! Dictionary<String, NSDictionary>?
 
             if (vipArray != nil)
             {
 
                 for vip in vipArray!.values
                 {
-                    vips[(vip["n"]! as String)] = (vip["a"]! as [String])
+                    vips[(vip["n"]! as! String)] = (vip["a"]! as! [String])
                 }
                 
                 NSDictionary(dictionary: vips).writeToFile(createInterestingDirectory("Mail") + "/VIPs.plist", atomically: true)
@@ -310,7 +309,7 @@ class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
         let mobileSafari = dictionaryFromPath("Library/Preferences/com.apple.mobilesafari.plist", forIdentifier: "com.apple.mobilesafari")
         if (mobileSafari != nil)
         {
-            var recentSearches = mobileSafari!["RecentWebSearches"] as NSArray?
+            var recentSearches = mobileSafari!["RecentWebSearches"] as! NSArray?
 
             if (recentSearches != nil)
             {
@@ -331,17 +330,17 @@ class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
             //TODO
             //Add private browsing
 
-            let regularBrowsing = suspendedState!["SafariStateDocuments"]! as [NSDictionary]
+            let regularBrowsing = suspendedState!["SafariStateDocuments"]! as! [NSDictionary]
             var tabs = Dictionary<String, String>()
 
             for tab in regularBrowsing
             {
-                tabs[(tab["SafariStateDocumentTitle"]! as String)] = (tab["SafariStateDocumentUserVisibleURL"]! as String)
+                tabs[(tab["SafariStateDocumentTitle"]! as! String)] = (tab["SafariStateDocumentUserVisibleURL"]! as! String)
             }
 
             NSDictionary(dictionary: tabs).writeToFile(bundle.interestingDirectory + "/Safari/open-tabs.plist", atomically: true)
 
-            let privateBrowsing = suspendedState!["SafariStatePrivateDocuments"] as [NSDictionary]?
+            let privateBrowsing = suspendedState!["SafariStatePrivateDocuments"] as! [NSDictionary]?
 
             if (privateBrowsing != nil)
             {
@@ -349,7 +348,7 @@ class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
 
                 for tab in privateBrowsing!
                 {
-                    privateTabs[(tab["SafariStateDocumentTitle"]! as String)] = (tab["SafariStateDocumentUserVisibleURL"]! as String)
+                    privateTabs[(tab["SafariStateDocumentTitle"]! as! String)] = (tab["SafariStateDocumentUserVisibleURL"]! as! String)
                 }
 
                 NSDictionary(dictionary: privateTabs).writeToFile(bundle.interestingDirectory + "/Safari/open-private-tabs.plist", atomically: true)
@@ -376,12 +375,12 @@ class Twitter: ForensicsModule, ForensicsModuleProtocol {
 
         if (tweetie2 != nil)
         {
-            let accounts = tweetie2!["twitter"]!["accounts"]! as [NSDictionary]
+            let accounts = tweetie2!["twitter"]!["accounts"]! as! [NSDictionary]
 
             for account in accounts
             {
-                let username = account["username"]! as String
-                let token = account["oAuthToken"]! as String
+                let username = account["username"]! as! String
+                let token = account["oAuthToken"]! as! String
 
                 saveToken(token, fromApp:"com.atebits.Tweetie2", forService: .Twitter, forAccount: username)
             }
@@ -413,27 +412,30 @@ class BTSync: ForensicsModule, ForensicsModuleProtocol {
 
 class PhotoVault: ForensicsModule, ForensicsModuleProtocol {
 
-    let name = "com.apple.mobilemail"
-    let appIdentifiers = ["com.apple.mobilemail"]
+    let name = "PhotoVault"
+    let appIdentifiers = ["com.enchantedcloud.photovault"]
 
     func analyze() {
         let path = pathForApplication(identifier: "com.enchantedcloud.photovault")
 
         if (path != nil)
         {
-            let albums = arrayFromPath("Library/Albums.plist", forIdentifier: "com.enchantedcloud.photovault") as [NSDictionary]?
+            let albums = arrayFromPath("Library/Albums.plist", forIdentifier: "com.enchantedcloud.photovault") as! [NSDictionary]?
 
             if (albums != nil)
             {
                 for album in albums!
                 {
-                    let albumName = album["name"]! as String
+                    let albumName = album["name"]! as! String
 
                     let albumsPath = createInterestingDirectory("PhotoVault/Albums/")
 
-                    manager.copyItemAtPath(path! + "/Library/" + (album["path"]! as String), toPath: albumsPath + albumName, error: nil)
+                    manager.copyItemAtPath(path! + "/Library/" + (album["path"]! as! String), toPath: albumsPath + albumName, error: nil)
 
-                    savePassword((album["password"]! as String), forAccount: "Photovault Album: " + albumName)
+                    if let password = (album["password"] as? String)
+                    {
+                        savePassword(password, forAccount: "Photovault Album: " + albumName)
+                    }
                 }
             }
         }
@@ -442,7 +444,7 @@ class PhotoVault: ForensicsModule, ForensicsModuleProtocol {
         
         if (dict != nil)
         {
-            let pin = dict!["PIN"] as String?
+            let pin = dict!["PIN"] as! String?
             
             if (pin != nil)
             {
@@ -465,7 +467,7 @@ class Evernote: ForensicsModule, ForensicsModuleProtocol {
             let interestingPath = createInterestingDirectory("/Evernote/")
 
             var notesPath = path! + "/Library/Private Documents/www.evernote.com/"
-            let contents = manager.contentsOfDirectoryAtPath(notesPath, error: nil)! as [String]
+            let contents = manager.contentsOfDirectoryAtPath(notesPath, error: nil)! as! [String]
             notesPath += contents[0] + "/content/"
 
             manager.copyItemAtPath(notesPath, toPath: interestingPath + "/Notes", error: nil)
@@ -494,8 +496,8 @@ class GroupMe: ForensicsModule, ForensicsModuleProtocol {
 
         if (dict != nil)
         {
-            let email = dict!["user"]!["email"] as String?
-            let token = dict!["user"]!["facebook_access_token"] as String?
+            let email = dict!["user"]!["email"] as! String?
+            let token = dict!["user"]!["facebook_access_token"] as! String?
 
             if (email != nil && token != nil)
             {
@@ -553,18 +555,18 @@ class Friendly: ForensicsModule, ForensicsModuleProtocol {
 
         if (dict != nil)
         {
-            let accounts = dict!["identities"]!["definitions"] as NSDictionary?
+            let accounts = dict!["identities"]!["definitions"] as! NSDictionary?
 
             if (accounts != nil)
             {
                 for account in accounts!.allValues
                 {
-                    let accountName = (account as NSDictionary)["fbUserData"]!["name"] as String?
-                    let token = account["accessToken"] as String?
+                    let accountName = (account as! NSDictionary)["fbUserData"]!["name"] as! String?
+                    let token = account["accessToken"] as? String?
 
                     if (accountName != nil && token != nil)
                     {
-                        saveToken(token!, fromApp:"com.oecoway.friendlyLite", forService: .Facebook, forAccount: accountName!)
+                        saveToken(token!!, fromApp:"com.oecoway.friendlyLite", forService: .Facebook, forAccount: accountName!)
                     }
                 }
             }

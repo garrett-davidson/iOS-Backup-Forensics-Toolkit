@@ -25,7 +25,7 @@ class ViewController: NSViewController {
         static var modules = [ForensicsModuleProtocol]()
         static var oauthTokens = Dictionary<String, Dictionary<String, Dictionary<String, [String]>>>()
         static var passwords = Dictionary<String, String>()
-        static let debugging = true
+        static let debugging = false
         static let debuggingDeviceName = "<Unknown>"
     }
 
@@ -80,22 +80,54 @@ class ViewController: NSViewController {
         }
     }
     @IBAction func startAnalyzing(sender: AnyObject) {
-
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        if (!ViewController.ClassVariables.debugging)
         {
+            self.analyzeInfoPlist()
+            self.recreateFileSystem(self.handleEncryption())
+        }
 
-            if (!ViewController.ClassVariables.debugging)
-            {
-                self.analyzeInfoPlist()
-                self.recreateFileSystem()
-            }
-
-            else
+        else
+        {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
             {
                 self.analyze()
-            }
+            })
+        }
+    }
 
-        })
+    func handleEncryption() -> Keybag?
+    {
+        if let manifest = NSDictionary(contentsOfFile: backupDirectory + "/Manifest.plist")
+        {
+            if (manifest["IsEncrypted"] as? Bool) == true
+            {
+                let keybag = Keybag(blob: (manifest["BackupKeyBag"] as! NSData))
+                if keybag.unlockWithPasscode(promptForPassword("Backup password:"))
+                {
+                    return keybag
+                }
+            }
+        }
+
+        return nil
+    }
+
+    func promptForPassword(prompt: String) -> String
+    {
+        let alert = NSAlert()
+        alert.messageText = prompt
+        alert.addButtonWithTitle("OK")
+        alert.addButtonWithTitle("Cancel")
+
+        let input = NSSecureTextField(frame: NSMakeRect(0, 0, 200, 24))
+        alert.accessoryView = input
+
+        if alert.runModal() == NSAlertFirstButtonReturn
+        {
+            return input.stringValue
+        }
+
+        return ""
     }
 
     func loadBundles() {
@@ -110,7 +142,7 @@ class ViewController: NSViewController {
     }
 
     func retrieveBundles(path: String) -> [NSBundle] {
-        let bundleDirectoryPaths = path == "" ? [String]() : manager.contentsOfDirectoryAtPath(path, error: nil) as [String]
+        let bundleDirectoryPaths = path == "" ? [String]() : manager.contentsOfDirectoryAtPath(path, error: nil) as! [String]
 
         var bundles = [NSBundle]()
         for bundlePath in bundleDirectoryPaths
@@ -220,19 +252,19 @@ class ViewController: NSViewController {
         }
     }
 
-    func recreateFileSystem() {
-        dispatch_async(dispatch_get_main_queue(),
-        {
-            self.sectionLabel.stringValue = "Recreating file system"
-        })
+    func recreateFileSystem(keybag: Keybag?) {
+        self.sectionLabel.stringValue = "Recreating file system"
 
-        self.taskLabel.stringValue = "Copying files"
-        let manifest = MBDB(path: self.backupDirectory, outDirectory: self.originalDirectory)
-        manifest.recreateFilesytem()
-        dispatch_async(dispatch_get_main_queue(), {
-            self.taskLabel.stringValue = "Finished recreating file system"
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        {
+            self.taskLabel.stringValue = "Copying files"
+            let manifest = MBDB(path: self.backupDirectory, outDirectory: self.originalDirectory, keybag: keybag)
+            manifest.recreateFilesytem()
+            dispatch_async(dispatch_get_main_queue(), {
+                self.taskLabel.stringValue = "Finished recreating file system"
+            })
+            self.analyze()
         })
-        self.analyze()
     }
 
     func analyzeInfoPlist() {
@@ -242,7 +274,7 @@ class ViewController: NSViewController {
         taskLabel.stringValue = "Reading Info.plist"
         let path = backupDirectory + "/Info.plist"
         let info = NSDictionary(contentsOfFile: path)!
-        let rootDirectory = originalDirectory + "/" + (info.objectForKey("Device Name") as String)
+        let rootDirectory = originalDirectory + "/" + (info.objectForKey("Device Name") as! String)
         originalDirectory = rootDirectory + "/Original/"
         interestingDirectory = rootDirectory + "/Interesting/"
 
@@ -323,7 +355,7 @@ class ModuleSelectionViewController: NSViewController, NSTableViewDelegate, NSTa
     func tableView(tableView: NSTableView, setObjectValue value: AnyObject?, forTableColumn column: NSTableColumn?, row: Int) {
         if (column!.identifier == "Use")
         {
-            selected[row] = value! as Bool
+            selected[row] = value! as! Bool
         }
     }
     @IBAction func okButton(sender: AnyObject) {

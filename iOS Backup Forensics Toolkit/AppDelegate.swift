@@ -26,7 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     lazy var applicationDocumentsDirectory: NSURL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named "A-Programmer-s-Crucible.iOS_Backup_Forensics_Toolkit" in the user's Application Support directory.
         let urls = NSFileManager.defaultManager().URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)
-        let appSupportURL = urls[urls.count - 1] as NSURL
+        let appSupportURL = urls[urls.count - 1] as! NSURL
         return appSupportURL.URLByAppendingPathComponent("A-Programmer-s-Crucible.iOS_Backup_Forensics_Toolkit")
     }()
 
@@ -73,7 +73,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if error != nil {
                 dict[NSUnderlyingErrorKey] = error
             }
-            error = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
+            error = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict as [NSObject : AnyObject])
             NSApplication.sharedApplication().presentError(error!)
             return nil
         } else {

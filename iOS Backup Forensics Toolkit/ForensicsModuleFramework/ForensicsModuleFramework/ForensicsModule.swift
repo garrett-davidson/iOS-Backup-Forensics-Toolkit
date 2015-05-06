@@ -137,11 +137,11 @@ import Foundation
 
         if (dict != nil)
         {
-            let key1 = dict!["FBAccessTokenInformationKey"] as NSDictionary?
+            let key1 = dict!["FBAccessTokenInformationKey"] as! NSDictionary?
 
             if (key1 != nil)
             {
-                let token = key1!["com.facebook.sdk:TokenInformationTokenKey"] as String?
+                let token = key1!["com.facebook.sdk:TokenInformationTokenKey"] as! String?
 
                 if (token != nil)
                 {
@@ -171,7 +171,7 @@ import Foundation
     var originalDirectory: String {get}
     var interestingDirectory: String {get}
 
-    class func loadBundleWithDirectories(#originalDirectory: String, interestingDirectory: String) -> ForensicsBundleProtocol
+    static func loadBundleWithDirectories(#originalDirectory: String, interestingDirectory: String) -> ForensicsBundleProtocol
 }
 
 @objc public protocol ForensicsModuleProtocol {
