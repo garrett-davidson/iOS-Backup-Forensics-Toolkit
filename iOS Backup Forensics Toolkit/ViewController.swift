@@ -15,18 +15,18 @@ class ViewController: NSViewController {
 
     let manager = NSFileManager.defaultManager()
 
-    var backupDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/GenTest/Downloads/untitled folder 2/MobileSync/\(ClassVariables.debuggingDeviceName)" : ""
-    var originalDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/GenTest/Downloads/untitled folder 2/MobileSync/\(ClassVariables.debuggingDeviceName)/Original/" : ""
-    var interestingDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/GenTest/Downloads/untitled folder 2/MobileSync/\(ClassVariables.debuggingDeviceName)/Interesting/" :""
-    var bundleDirectory = ViewController.ClassVariables.debugging ? "/Users/garrettdavidson/Library/Developer/Xcode/DerivedData/iOS_Backup_Forensics_Toolkit-affiakrgssjgszenwbnxcrvjadvs/Build/Products/Debug/" : ""
+    var backupDirectory = ViewController.ClassVariables.debugging ? "/Users/garrett/Downloads/test/\(ClassVariables.debuggingDeviceName)" : ""
+    var originalDirectory = ViewController.ClassVariables.debugging ? "/Users/garrett/Downloads/test/\(ClassVariables.debuggingDeviceName)/Original/" : ""
+    var interestingDirectory = ViewController.ClassVariables.debugging ? "/Users/garrett/Downloads/test/\(ClassVariables.debuggingDeviceName)/Interesting/" :""
+    var bundleDirectory = /*ViewController.ClassVariables.debugging ? "/Users/garrett/Library/Developer/Xcode/DerivedData/iOS_Backup_Forensics_Toolkit-hbpflxgrehohrvgcqevnpcqnuvyy/Build/Products/Debug/" : */ ""
 
     struct ClassVariables
     {
         static var modules = [ForensicsModuleProtocol]()
         static var oauthTokens = Dictionary<String, Dictionary<String, Dictionary<String, [String]>>>()
         static var passwords = Dictionary<String, String>()
-        static let debugging = false
-        static let debuggingDeviceName = "<Unknown>"
+        static let debugging = true
+        static let debuggingDeviceName = "iPhone"
     }
 
     @IBOutlet weak var backupDirectoryField: NSTextField!
@@ -142,27 +142,34 @@ class ViewController: NSViewController {
     }
 
     func retrieveBundles(path: String) -> [NSBundle] {
-        let bundleDirectoryPaths = path == "" ? [String]() : (try! manager.contentsOfDirectoryAtPath(path)) 
-
         var bundles = [NSBundle]()
-        for bundlePath in bundleDirectoryPaths
-        {
-            if (bundlePath.rangeOfString(".bundle") != nil)
-            {
-                let loadedBundle = NSBundle(path: path + "/" + bundlePath)!
 
-                //for some reason this causes a segmentation fault when using ForensicsBundleProtocol.Protocol
-//                if let bundleClass = loadedBundle.principalClass as? ForensicsBundleProtocol.Protocol
-                
-                bundles.append(loadedBundle)
+        //"try?" still throws an uncaught exception for empty path
+        //No clue why though
+        if path != "" {
+            
+            if let bundleDirectoryPaths = try? manager.contentsOfDirectoryAtPath(path) {
+
+                for bundlePath in bundleDirectoryPaths
+                {
+                    if (bundlePath.rangeOfString(".bundle") != nil)
+                    {
+                        let loadedBundle = NSBundle(path: path + "/" + bundlePath)!
+
+                        //for some reason this causes a segmentation fault when using ForensicsBundleProtocol.Protocol
+        //                if let bundleClass = loadedBundle.principalClass as? ForensicsBundleProtocol.Protocol
+                        
+                        bundles.append(loadedBundle)
+                    }
+                }
+
+                dispatch_async(dispatch_get_main_queue(),
+                {
+        //            self.performSegueWithIdentifier("listModules", sender: self)
+        //            MainViewController.ClassVariables.modules = [ForensicsModuleProtocol]()
+                })
             }
         }
-
-        dispatch_async(dispatch_get_main_queue(),
-        {
-//            self.performSegueWithIdentifier("listModules", sender: self)
-//            MainViewController.ClassVariables.modules = [ForensicsModuleProtocol]()
-        })
 
 
         return bundles
@@ -177,7 +184,12 @@ class ViewController: NSViewController {
 
         do {
             try self.manager.createDirectoryAtPath(self.interestingDirectory, withIntermediateDirectories: false, attributes: nil)
-        } catch _ {
+        } catch let error as NSError {
+            
+            //Error code for file already exists
+            if error.code != 516 {
+                print(error)
+            }
         }
 
         self.beginAnalyzing()
@@ -202,6 +214,7 @@ class ViewController: NSViewController {
             {
                 self.taskLabel.stringValue = module.name
             })
+            print("Running \(module.name)")
             module.analyze()
         }
 

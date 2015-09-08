@@ -82,11 +82,8 @@ import Foundation
     }
 
     public func dictionaryFromPath(relativePath: String, forIdentifier identifier: String) -> NSDictionary? {
-        let applicationPath = pathForApplication(identifier: identifier)
-
-        if (applicationPath != nil)
-        {
-            let dictPath = applicationPath! + relativePath
+        if let applicationPath = pathForApplication(identifier: identifier) {
+            let dictPath = applicationPath + relativePath
             if (manager.fileExistsAtPath(dictPath)) {
                 return NSDictionary(contentsOfFile: dictPath)
             }
@@ -130,26 +127,13 @@ import Foundation
     }
 
     public func pullFacebookAccessTokenFromApp(identifier identifier: String, customPath: String?) {
-        var path = "Library/Preferences/\(identifier).plist"
+        let path = customPath == nil ? "Library/Preferences/\(identifier).plist" : customPath!
 
-        if (customPath != nil)
-        {
-            path = customPath!
-        }
-
-        let dict = dictionaryFromPath(path, forIdentifier: identifier)
-
-        if (dict != nil)
-        {
-            let key1 = dict!["FBAccessTokenInformationKey"] as! NSDictionary?
-
-            if (key1 != nil)
-            {
-                let token = key1!["com.facebook.sdk:TokenInformationTokenKey"] as! String?
-
-                if (token != nil)
+        if let dict = dictionaryFromPath(path, forIdentifier: identifier) {
+            if let key1 = dict["FBAccessTokenInformationKey"] as? NSDictionary {
+                if let token = key1["com.facebook.sdk:TokenInformationTokenKey"] as! String?
                 {
-                    saveToken(token!, fromApp:identifier, forService: .Facebook)
+                    saveToken(token, fromApp:identifier, forService: .Facebook)
                 }
             }
         }

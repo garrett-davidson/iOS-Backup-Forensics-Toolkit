@@ -71,18 +71,18 @@ class InstaCrop: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.six8t.InstaCropFree"]
 
     func analyze() {
-        let appPath = pathForApplication(identifier: "com.six8t.InstaCropFree")
-
-        if (appPath != nil)
+        if let appPath = pathForApplication(identifier: "com.six8t.InstaCropFree")
         {
             let interestingPath = bundle.interestingDirectory + "/InstaCrop"
             do {
                 try manager.createDirectoryAtPath(interestingPath, withIntermediateDirectories: false, attributes: nil)
-            } catch _ {
+            } catch let error as NSError {
+                print(error)
             }
             do {
-                try manager.copyItemAtPath(appPath! + "/Documents", toPath: interestingPath + "/Documents")
-            } catch _ {
+                try manager.copyItemAtPath(appPath + "/Documents", toPath: interestingPath + "/Documents")
+            } catch let error as NSError {
+                print(error)
             }
         }
     }
@@ -102,18 +102,19 @@ class Instagram: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.burbn.instagram"]
 
     func analyze() {
-        let appPath = pathForApplication(identifier: "com.burbn.instagram")
-
-        if (appPath != nil)
+        
+        if let appPath = pathForApplication(identifier: "com.burbn.instagram")
         {
             let interestingPath = bundle.interestingDirectory + "/Instagram"
             do {
                 try manager.createDirectoryAtPath(interestingPath, withIntermediateDirectories: false, attributes: nil)
-            } catch _ {
+            } catch let error as NSError {
+                print(error)
             }
             do {
-                try manager.copyItemAtPath(appPath! + "/Documents/Inbox/", toPath: interestingPath + "/Inbox")
-            } catch _ {
+                try manager.copyItemAtPath(appPath + "/Documents/Inbox/", toPath: interestingPath + "/Inbox")
+            } catch let error as NSError {
+                print(error)
             }
         }
     }
@@ -125,12 +126,11 @@ class Skype: ForensicsModule, ForensicsModuleProtocol {
 
     func analyze() {
         let appPath = pathForApplication(identifier: "com.skype.SkypeForiPad")
-        let dict = dictionaryFromPath("Library/Preferences/com.skype.SkypeForiPad", forIdentifier: "com.skype.SkypeForiPad")
+        
 
-        if (dict != nil)
-        {
-            let username = dict!["SkypePrefsLastLoggedInSkypeName"] as! String
-            let fullName = dict!["SkypePrefsLastLoggedInFullName"] as! String
+        if let dict = dictionaryFromPath("Library/Preferences/com.skype.SkypeForiPad", forIdentifier: "com.skype.SkypeForiPad") {
+            let username = dict["SkypePrefsLastLoggedInSkypeName"] as! String
+            let fullName = dict["SkypePrefsLastLoggedInFullName"] as! String
             
             let xmlPath = "\(appPath)/Library/Application Support/Skype/\(username)/config.xml"
 
@@ -156,12 +156,9 @@ class Tumblr: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.tumblr.tumblr"]
 
     func analyze() {
-        let dict = dictionaryFromPath("Library/Preferences/com.tumblr.tumblr.plist", forIdentifier: "com.tumblr.tumblr")
-
-        if (dict != nil)
-        {
-            for account in (dict!["UserDefaultAccountsInfo"] as! Dictionary<String, NSDictionary>).keys {
-                saveToken(((dict!["UserDefaultAccountsInfo"]![account]! as! NSDictionary)["OAuthToken"]! as! String), fromApp: "com.tumblr.tumblr", forService: .Tumblr, forAccount: account)
+        if let dict = dictionaryFromPath("Library/Preferences/com.tumblr.tumblr.plist", forIdentifier: "com.tumblr.tumblr") {
+            for account in (dict["UserDefaultAccountsInfo"] as! Dictionary<String, NSDictionary>).keys {
+                saveToken(((dict["UserDefaultAccountsInfo"]![account]! as! NSDictionary)["OAuthToken"]! as! String), fromApp: "com.tumblr.tumblr", forService: .Tumblr, forAccount: account)
             }
         }
     }
@@ -172,16 +169,17 @@ class HiddenPhoto: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.aromdee.HiddenPhoto"]
 
     func analyze() {
-        let hiddenPhotoPath = pathForApplication(identifier: "com.aromdee.HiddenPhoto")
-        if (hiddenPhotoPath != nil)
-        {
+        
+        if let hiddenPhotoPath = pathForApplication(identifier: "com.aromdee.HiddenPhoto") {
             do {
                 try manager.createDirectoryAtPath(bundle.interestingDirectory + "/Private Photo", withIntermediateDirectories: false, attributes: nil)
-            } catch _ {
+            } catch let error as NSError {
+                print(error)
             }
             do {
-                try manager.copyItemAtPath(hiddenPhotoPath! + "/Documents/Album", toPath: bundle.interestingDirectory + "/Private Photo/Album")
-            } catch _ {
+                try manager.copyItemAtPath(hiddenPhotoPath + "/Documents/Album", toPath: bundle.interestingDirectory + "/Private Photo/Album")
+            } catch let error as NSError {
+                print(error)
             }
         }
     }
@@ -249,11 +247,13 @@ class PhoneRecords: ForensicsModule, ForensicsModuleProtocol {
         let path = bundle.interestingDirectory + "/Phone Records/"
         do {
             try manager.createDirectoryAtPath(path, withIntermediateDirectories: false, attributes: nil)
-        } catch _ {
+        } catch let error as NSError {
+            print(error)
         }
         do {
             try manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/CallHistoryDB/CallHistory.storedata", toPath: path + "CallHistory.sqlite")
-        } catch _ {
+        } catch let error as NSError {
+            print(error)
         }
     }
 }
@@ -265,7 +265,8 @@ class Calendar: ForensicsModule, ForensicsModuleProtocol {
     func analyze() {
         do {
             try manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/Calendar", toPath: bundle.interestingDirectory + "/Calendar")
-        } catch _ {
+        } catch let error as NSError {
+            print(error)
         }
     }
 }
@@ -277,7 +278,8 @@ class Contacts: ForensicsModule, ForensicsModuleProtocol {
     func analyze() {
         do {
             try manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/AddressBook/", toPath: bundle.interestingDirectory + "/Contacts/")
-        } catch _ {
+        } catch let error as NSError {
+            print(error)
         }
     }
 }
@@ -289,7 +291,8 @@ class Accounts: ForensicsModule, ForensicsModuleProtocol {
     func analyze() {
         do {
             try manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/Accounts/", toPath: bundle.interestingDirectory + "/Accounts")
-        } catch _ {
+        } catch let error as NSError {
+            print(error)
         }
     }
 }
@@ -298,10 +301,13 @@ class SMSAttachments: ForensicsModule, ForensicsModuleProtocol {
     let name = "SMS Attachments"
     let appIdentifiers = ["???"] //find messages identifier
 
+    //TODO:
+    //Make output less annoying
     func analyze() {
         do {
             try manager.copyItemAtPath(bundle.originalDirectory + "/MediaDomain/Library/SMS/Attachments/", toPath: bundle.interestingDirectory + "/SMS Attachments/")
-        } catch _ {
+        } catch let error as NSError {
+            print(error)
         }
     }
 }
@@ -323,16 +329,16 @@ class MobileMail: ForensicsModule, ForensicsModuleProtocol {
         //        }
 
         var vips = Dictionary<String, [String]>()
-        let vipDict = super.dictionaryFromPath("Library/Preferences/com.apple.mobilemail.plist", forIdentifier: "com.apple.mobilemail")
+        
 
-        if (vipDict != nil)
+        if let vipDict = super.dictionaryFromPath("Library/Preferences/com.apple.mobilemail.plist", forIdentifier: "com.apple.mobilemail")
         {
-            let vipArray = vipDict!["VIP-senders"] as! Dictionary<String, NSDictionary>?
+            
 
-            if (vipArray != nil)
+            if let vipArray = vipDict["VIP-senders"] as! Dictionary<String, NSDictionary>?
             {
 
-                for vip in vipArray!.values
+                for vip in vipArray.values
                 {
                     vips[(vip["n"]! as! String)] = (vip["a"]! as! [String])
                 }
@@ -351,16 +357,13 @@ class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
 
     func analyze() {
         //Recent searches
-        let mobileSafari = dictionaryFromPath("Library/Preferences/com.apple.mobilesafari.plist", forIdentifier: "com.apple.mobilesafari")
-        if (mobileSafari != nil)
+        if let mobileSafari = dictionaryFromPath("Library/Preferences/com.apple.mobilesafari.plist", forIdentifier: "com.apple.mobilesafari")
         {
-            var recentSearches = mobileSafari!["RecentWebSearches"] as! NSArray?
-
-            if (recentSearches != nil)
+            if let recentSearches = mobileSafari["RecentWebSearches"] as? NSArray
             {
-                if (recentSearches!.count > 0)
+                if (recentSearches.count > 0)
                 {
-                    recentSearches!.writeToFile(createInterestingDirectory("Safari") + "/recent-searches.plist", atomically: true)
+                    recentSearches.writeToFile(createInterestingDirectory("Safari") + "/recent-searches.plist", atomically: true)
                 }
             }
         }
@@ -369,13 +372,13 @@ class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
         //History
 
         //Open tabs
-        let suspendedState = dictionaryFromPath("Library/Safari/SuspendState.plist", forIdentifier: "com.apple.mobilesafari")
-        if (suspendedState != nil)
+        
+        if let suspendedState = dictionaryFromPath("Library/Safari/SuspendState.plist", forIdentifier: "com.apple.mobilesafari")
         {
             //TODO
             //Add private browsing
 
-            let regularBrowsing = suspendedState!["SafariStateDocuments"]! as! [NSDictionary]
+            let regularBrowsing = suspendedState["SafariStateDocuments"]! as! [NSDictionary]
             var tabs = Dictionary<String, String>()
 
             for tab in regularBrowsing
@@ -385,18 +388,20 @@ class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
 
             NSDictionary(dictionary: tabs).writeToFile(bundle.interestingDirectory + "/Safari/open-tabs.plist", atomically: true)
 
-            let privateBrowsing = suspendedState!["SafariStatePrivateDocuments"] as! [NSDictionary]?
+            
 
-            if (privateBrowsing != nil)
+            if let privateBrowsing = suspendedState["SafariStatePrivateDocuments"] as? [NSDictionary]
             {
-                var privateTabs = Dictionary<String, String>()
+                if privateBrowsing.count > 0 {
+                    var privateTabs = Dictionary<String, String>()
 
-                for tab in privateBrowsing!
-                {
-                    privateTabs[(tab["SafariStateDocumentTitle"]! as! String)] = (tab["SafariStateDocumentUserVisibleURL"]! as! String)
+                    for tab in privateBrowsing
+                    {
+                        privateTabs[(tab["SafariStateDocumentTitle"]! as! String)] = (tab["SafariStateDocumentUserVisibleURL"]! as! String)
+                    }
+
+                    NSDictionary(dictionary: privateTabs).writeToFile(bundle.interestingDirectory + "/Safari/open-private-tabs.plist", atomically: true)
                 }
-
-                NSDictionary(dictionary: privateTabs).writeToFile(bundle.interestingDirectory + "/Safari/open-private-tabs.plist", atomically: true)
             }
         }
         
@@ -406,7 +411,8 @@ class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
         {
             do {
                 try manager.copyItemAtPath(safariPath! + "/Library/WebKit/WebsiteData/LocalStorage/", toPath: bundle.interestingDirectory + "/Safari/LocalStorage")
-            } catch _ {
+            } catch let error as NSError {
+                print(error)
             }
         }
     }
@@ -419,11 +425,9 @@ class Twitter: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.atebits.Tweetie2"]
 
     func analyze() {
-        let tweetie2 = dictionaryFromPath("Library/Preferences/com.atebits.Tweetie2.plist", forIdentifier: "com.atebits.Tweetie2")
-
-        if (tweetie2 != nil)
+        if let tweetie2 = dictionaryFromPath("Library/Preferences/com.atebits.Tweetie2.plist", forIdentifier: "com.atebits.Tweetie2")
         {
-            let accounts = tweetie2!["twitter"]!["accounts"]! as! [NSDictionary]
+            let accounts = tweetie2["twitter"]!["accounts"]! as! [NSDictionary]
 
             for account in accounts
             {
@@ -443,19 +447,12 @@ class BTSync: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.bittorent.BitTorrent"]
 
     func analyze() {
-        let btSyncPath = pathForApplication(identifier: "com.bittorent.BitTorrent")
 
-        if (btSyncPath != nil)
+        if let btSyncPath = pathForApplication(identifier: "com.bittorent.BitTorrent")
         {
-            var error: NSError?
             do {
-                try manager.copyItemAtPath(btSyncPath! + "/Documents/Storage/", toPath: createInterestingDirectory("BTSync") + "/SyncedFiles")
-            } catch var error1 as NSError {
-                error = error1
-            }
-
-            if (error != nil)
-            {
+                try manager.copyItemAtPath(btSyncPath + "/Documents/Storage/", toPath: createInterestingDirectory("BTSync") + "/SyncedFiles")
+            } catch let error as NSError {
                 print(error)
             }
         }
@@ -468,9 +465,8 @@ class PhotoVault: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.enchantedcloud.photovault"]
 
     func analyze() {
-        let path = pathForApplication(identifier: "com.enchantedcloud.photovault")
 
-        if (path != nil)
+        if let path = pathForApplication(identifier: "com.enchantedcloud.photovault")
         {
             let albums = arrayFromPath("Library/Albums.plist", forIdentifier: "com.enchantedcloud.photovault") as! [NSDictionary]?
 
@@ -483,8 +479,9 @@ class PhotoVault: ForensicsModule, ForensicsModuleProtocol {
                     let albumsPath = createInterestingDirectory("PhotoVault/Albums/")
 
                     do {
-                        try manager.copyItemAtPath(path! + "/Library/" + (album["path"]! as! String), toPath: albumsPath + albumName)
-                    } catch _ {
+                        try manager.copyItemAtPath(path + "/Library/" + (album["path"]! as! String), toPath: albumsPath + albumName)
+                    } catch let error as NSError {
+                        print(error)
                     }
 
                     if let password = (album["password"] as? String)
@@ -495,15 +492,13 @@ class PhotoVault: ForensicsModule, ForensicsModuleProtocol {
             }
         }
 
-        let dict = dictionaryFromPath("Library/Preferences/com.enchantedcloud.photovault.plist", forIdentifier: "com.enchantedcloud.photovault")
         
-        if (dict != nil)
-        {
-            let pin = dict!["PIN"] as! String?
+        
+        if let dict = dictionaryFromPath("Library/Preferences/com.enchantedcloud.photovault.plist", forIdentifier: "com.enchantedcloud.photovault") {
             
-            if (pin != nil)
-            {
-                savePassword(pin!, forAccount: "Photovault Pin")
+            if let pin = dict["PIN"] as? String {
+            
+                savePassword(pin, forAccount: "Photovault Pin")
             }
         }
     }
@@ -515,19 +510,20 @@ class Evernote: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.evernote.iPhone.Evernote"]
 
     func analyze() {
-        let path = pathForApplication(identifier: "com.evernote.iPhone.Evernote")
-
-        if (path != nil)
+        //TODO:
+        //Update
+        if let path = pathForApplication(identifier: "com.evernote.iPhone.Evernote")
         {
             let interestingPath = createInterestingDirectory("/Evernote/")
 
-            var notesPath = path! + "/Library/Private Documents/www.evernote.com/"
-            let contents = (try! manager.contentsOfDirectoryAtPath(notesPath)) as! [String]
-            notesPath += contents[0] + "/content/"
+            var notesPath = path + "/Library/Private Documents/www.evernote.com/"
+            if let contents = (try? manager.contentsOfDirectoryAtPath(notesPath)) {
+                notesPath += contents[0] + "/content/"
 
-            do {
-                try manager.copyItemAtPath(notesPath, toPath: interestingPath + "/Notes")
-            } catch _ {
+                do {
+                    try manager.copyItemAtPath(notesPath, toPath: interestingPath + "/Notes")
+                } catch _ {
+                }
             }
         }
     }
@@ -539,7 +535,8 @@ class GoogleChrome: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.apple.mobilemail"]
 
     func analyze() {
-
+        //TODO:
+        //All of it
     }
 
 }
@@ -547,19 +544,18 @@ class GoogleChrome: ForensicsModule, ForensicsModuleProtocol {
 class GroupMe: ForensicsModule, ForensicsModuleProtocol {
 
     let name = "GroupMe"
-    let appIdentifiers = ["com.groupme.iphone-app"]
+    let appIdentifiers = ["com.groupme.iphone"]
 
+    //TODO:
+    //Phone number
+    
     func analyze() {
-        let dict = dictionaryFromPath("Library/Preferences/com.groupme.iphone-app.plist", forIdentifier: "com.groupme.iphone-app")
 
-        if (dict != nil)
-        {
-            let email = dict!["user"]!["email"] as! String?
-            let token = dict!["user"]!["facebook_access_token"] as! String?
-
-            if (email != nil && token != nil)
-            {
-                saveToken(token!, fromApp:"com.groupme.iphone-app", forService: .Facebook, forAccount: email)
+        if let dict = dictionaryFromPath("Library/Preferences/com.groupme.iphone-app.plist", forIdentifier: "com.groupme.iphone") {
+            if let email = dict["user"]!["email"] as? String {
+                if let token = dict["user"]!["facebook_access_token"] as? String {
+                    saveToken(token, fromApp:"com.groupme.iphone", forService: .Facebook, forAccount: email)
+                }
             }
         }
     }
@@ -609,22 +605,13 @@ class Friendly: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["com.oecoway.friendlyLite"]
 
     func analyze() {
-        let dict = dictionaryFromPath("Library/Preferences/com.oecoway.friendlyLite.plist", forIdentifier: "com.oecoway.friendlyLite")
-
-        if (dict != nil)
-        {
-            let accounts = dict!["identities"]!["definitions"] as! NSDictionary?
-
-            if (accounts != nil)
-            {
-                for account in accounts!.allValues
-                {
-                    let accountName = (account as! NSDictionary)["fbUserData"]!["name"] as! String?
-                    let token = account["accessToken"] as? String?
-
-                    if (accountName != nil && token != nil)
-                    {
-                        saveToken(token!!, fromApp:"com.oecoway.friendlyLite", forService: .Facebook, forAccount: accountName!)
+        if let dict = dictionaryFromPath("Library/Preferences/com.oecoway.friendlyLite.plist", forIdentifier: "com.oecoway.friendlyLite") {
+            if let accounts = dict["identities"]!["definitions"] as? NSDictionary {
+                for account in accounts.allValues {
+                    if let accountName = (account as! NSDictionary)["fbUserData"]!["name"] as? String {
+                        if let token = account["accessToken"] as? String {
+                            saveToken(token, fromApp:"com.oecoway.friendlyLite", forService: .Facebook, forAccount: accountName)
+                        }
                     }
                 }
             }
