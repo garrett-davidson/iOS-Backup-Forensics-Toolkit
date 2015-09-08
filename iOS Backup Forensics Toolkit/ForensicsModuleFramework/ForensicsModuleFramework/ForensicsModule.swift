@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc public class ForensicsModule {
+@objc public class ForensicsModule: NSObject {
 
     public let manager = NSFileManager.defaultManager()
 
@@ -29,7 +29,7 @@ import Foundation
         self.bundle = bundle
     }
 
-    public func pathForApplication(#identifier: String) -> String? {
+    public func pathForApplication(identifier identifier: String) -> String? {
         let path = "\(bundle.originalDirectory)/Applications/\(identifier)/"
 
         if (manager.fileExistsAtPath(path)) {
@@ -111,21 +111,25 @@ import Foundation
 
     public func createInterestingDirectory(relativePath: String) -> String {
         let path = "\(bundle.interestingDirectory)/\(relativePath)/"
-        manager.createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil, error: nil)
+        do {
+            try manager.createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            print(error)
+        }
         return path
     }
 
-    public func description() -> String {
+    public func descriptionM() -> String {
         return ""
     }
 
-    public func pullFacebookAccessTokenFromApp(#identifier: String)
+    public func pullFacebookAccessTokenFromApp(identifier identifier: String)
     {
         //Can't use default value because path depends on identifier
         pullFacebookAccessTokenFromApp(identifier: identifier, customPath: nil)
     }
 
-    public func pullFacebookAccessTokenFromApp(#identifier: String, customPath: String?) {
+    public func pullFacebookAccessTokenFromApp(identifier identifier: String, customPath: String?) {
         var path = "Library/Preferences/\(identifier).plist"
 
         if (customPath != nil)
@@ -156,7 +160,7 @@ import Foundation
     }
 
     public func pullXMLValue(path:String, tag: String) -> String? {
-        let xmlString = NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil)
+        let xmlString = try? NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding)
 
         let startIndex = xmlString!.rangeOfString("<\(tag)>").location
         let endIndex = xmlString!.rangeOfString("</\(tag)>").location
@@ -171,7 +175,7 @@ import Foundation
     var originalDirectory: String {get}
     var interestingDirectory: String {get}
 
-    static func loadBundleWithDirectories(#originalDirectory: String, interestingDirectory: String) -> ForensicsBundleProtocol
+    static func loadBundleWithDirectories(originalDirectory originalDirectory: String, interestingDirectory: String) -> ForensicsBundleProtocol
 }
 
 @objc public protocol ForensicsModuleProtocol {
@@ -182,5 +186,5 @@ import Foundation
     var bundle: ForensicsBundleProtocol {get}
 
     func analyze()
-    func description() -> String
+    func descriptionM() -> String
 }

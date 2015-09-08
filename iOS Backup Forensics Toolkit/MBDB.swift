@@ -28,13 +28,16 @@ class MBDB: NSObject {
     }
 
     func recreateFilesytem() {
-        manager.createDirectoryAtPath(outputDirectory, withIntermediateDirectories: true, attributes: nil, error: nil)
+        do {
+            try manager.createDirectoryAtPath(outputDirectory, withIntermediateDirectories: true, attributes: nil)
+        } catch _ {
+        }
         readHeader()
         while (handleRecord()) {
 
         }
 
-        println("Finished recreating file system")
+        print("Finished recreating file system")
     }
 
     func handleRecord() -> Bool {
@@ -75,11 +78,11 @@ class MBDB: NSObject {
         return inputStream.hasBytesAvailable
     }
 
-    func getFileName(#domain: String, path: String) -> String {
+    func getFileName(domain domain: String, path: String) -> String {
         return (domain + "-" + path).sha1()
     }
 
-    func getNewURL(#domain: String, path: String) -> NSURL {
+    func getNewURL(domain domain: String, path: String) -> NSURL {
         var topFolder = domain
 
         let components = domain.componentsSeparatedByString("-")
@@ -98,27 +101,35 @@ class MBDB: NSObject {
             }
         }
 
-        let newURL = NSURL(fileURLWithPath: "\(outputDirectory)/\(topFolder)/\(path)")!
+        let newURL = NSURL(fileURLWithPath: "\(outputDirectory)/\(topFolder)/\(path)")
 
         return newURL
     }
 
     func moveRecord(domain: String, path:String, protectionClass: Int, inout encryptionKey: [UInt8], fileSize: Int) {
-        let originalURL = NSURL(fileURLWithPath: backupDirectory + "/" + getFileName(domain: domain, path: path))!
+        let originalURL = NSURL(fileURLWithPath: backupDirectory + "/" + getFileName(domain: domain, path: path))
         let url = getNewURL(domain: domain, path: path)
         let directoryURL = url.URLByDeletingLastPathComponent!
 
         var error: NSError?
-        manager.createDirectoryAtURL(directoryURL, withIntermediateDirectories: true, attributes: nil, error: &error)
+        do {
+            try manager.createDirectoryAtURL(directoryURL, withIntermediateDirectories: true, attributes: nil)
+        } catch var error1 as NSError {
+            error = error1
+        }
         if (error != nil)
         {
-            println(error!)
+            print(error!)
         }
 
         //unencrypted backup
         if keybag == nil
         {
-            manager.copyItemAtURL(originalURL, toURL: url, error: &error)
+            do {
+                try manager.copyItemAtURL(originalURL, toURL: url)
+            } catch var error1 as NSError {
+                error = error1
+            }
         }
 
         //encrypted backup
@@ -127,7 +138,7 @@ class MBDB: NSObject {
             if let cipherData = NSData(contentsOfURL: originalURL)
             {
                 encryptionKey.removeRange(0...3)
-                let key = keybag!.unwrapKeyForClass(protectionClass, persistentKey: encryptionKey)
+                let key = keybag!.unwrapKeyForClass(protectionClass, persistentKey: &encryptionKey)
 
                 var keyBuffer = [UInt8](count: key.length, repeatedValue: 0)
                 key.getBytes(&keyBuffer, length:key.length)
@@ -142,14 +153,14 @@ class MBDB: NSObject {
             }
             else
             {
-                println("Unable to find file:")
-                println(originalURL)
+                print("Unable to find file:")
+                print(originalURL)
             }
         }
 
         if (error != nil)
         {
-            println(error!)
+            print(error!)
         }
     }
 
@@ -178,7 +189,7 @@ class MBDB: NSObject {
     }
 
     func readInt(length: Int) -> Int {
-        var buffer = readBytes(length)
+        let buffer = readBytes(length)
 
         var total:Int = 0
         for int in buffer

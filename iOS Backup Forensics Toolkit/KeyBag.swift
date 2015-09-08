@@ -40,7 +40,7 @@ class Keybag {
                 self.type = data as! Int
                 if self.type > 3
                 {
-                    println("FAIL: keybag type > 3 : \(self.type)")
+                    print("FAIL: keybag type > 3 : \(self.type)")
                 }
             }
 
@@ -53,7 +53,7 @@ class Keybag {
                 currentClassKey = NSMutableDictionary(object: data, forKey: "UUID")
             }
 
-            else if contains(classKeyTags, tag as String)
+            else if classKeyTags.contains((tag as String))
             {
                 currentClassKey![tag] = data
             }
@@ -124,7 +124,7 @@ class Keybag {
     {
         var derivedKey = [UInt8](count:Int(derivedKeyLength), repeatedValue: 0)
         
-        var status : Int32 = CCKeyDerivationPBKDF(CCPBKDFAlgorithm(kCCPBKDF2) as CCPBKDFAlgorithm, password, Int(password.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), UnsafePointer<UInt8>(salt.bytes), Int(salt.length), prf, rounds, &derivedKey, Int(derivedKey.count))
+        let status : Int32 = CCKeyDerivationPBKDF(CCPBKDFAlgorithm(kCCPBKDF2) as CCPBKDFAlgorithm, password, Int(password.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), UnsafePointer<UInt8>(salt.bytes), Int(salt.length), prf, rounds, &derivedKey, Int(derivedKey.count))
         if(status != Int32(kCCSuccess))
         {
             NSLog("ERROR: CCKeyDerivationPBDK failed with stats \(status).")
@@ -170,7 +170,7 @@ class Keybag {
 
         if C[0] != 0xa6a6a6a6a6a6a6a6
         {
-            println("AES decryption error")
+            print("AES decryption error")
         }
 
         let returnData = NSMutableData()
@@ -182,7 +182,7 @@ class Keybag {
         return returnData
     }
 
-    func unwrapKeyForClass(protectionClass: Int, persistentKey: inout [UInt8]) -> NSData
+    func unwrapKeyForClass(protectionClass: Int, inout persistentKey: [UInt8]) -> NSData
     {
         let classKey = classKeys[protectionClass]!["KEY"]! as! NSData
 
@@ -190,7 +190,7 @@ class Keybag {
 
         if (persistentKey.count != 0x28)
         {
-            println("Invalid key length")
+            print("Invalid key length")
         }
 
         var classKeyBuffer = [UInt8](count:classKey.length, repeatedValue:0)
@@ -204,7 +204,7 @@ class Keybag {
         var data = a.mutableCopy() as! NSMutableData
         if a.length % 16 > 0
         {
-            println("AESdecryptCBC: data length not /16, truncating")
+            print("AESdecryptCBC: data length not /16, truncating")
             data = a.subdataWithRange(NSMakeRange(0, (data.length/16)*16)).mutableCopy() as! NSMutableData
         }
 

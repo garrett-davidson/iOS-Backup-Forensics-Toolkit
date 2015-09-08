@@ -15,7 +15,7 @@ class DefaultModulesBundle: ForensicsBundleProtocol {
     @objc let interestingDirectory: String
     @objc var modules: [ForensicsModuleProtocol] = [ForensicsModuleProtocol]()
 
-    @objc class func loadBundleWithDirectories(#originalDirectory: String, interestingDirectory: String) -> ForensicsBundleProtocol {
+    @objc class func loadBundleWithDirectories(originalDirectory originalDirectory: String, interestingDirectory: String) -> ForensicsBundleProtocol {
         let bundle = DefaultModulesBundle(originalDirectory: originalDirectory, interestingDirectory: interestingDirectory)
 
         bundle.modules = [
@@ -76,8 +76,14 @@ class InstaCrop: ForensicsModule, ForensicsModuleProtocol {
         if (appPath != nil)
         {
             let interestingPath = bundle.interestingDirectory + "/InstaCrop"
-            manager.createDirectoryAtPath(interestingPath, withIntermediateDirectories: false, attributes: nil, error: nil)
-            manager.copyItemAtPath(appPath! + "/Documents", toPath: interestingPath + "/Documents", error: nil)
+            do {
+                try manager.createDirectoryAtPath(interestingPath, withIntermediateDirectories: false, attributes: nil)
+            } catch _ {
+            }
+            do {
+                try manager.copyItemAtPath(appPath! + "/Documents", toPath: interestingPath + "/Documents")
+            } catch _ {
+            }
         }
     }
 }
@@ -101,8 +107,14 @@ class Instagram: ForensicsModule, ForensicsModuleProtocol {
         if (appPath != nil)
         {
             let interestingPath = bundle.interestingDirectory + "/Instagram"
-            manager.createDirectoryAtPath(interestingPath, withIntermediateDirectories: false, attributes: nil, error: nil)
-            manager.copyItemAtPath(appPath! + "/Documents/Inbox/", toPath: interestingPath + "/Inbox", error: nil)
+            do {
+                try manager.createDirectoryAtPath(interestingPath, withIntermediateDirectories: false, attributes: nil)
+            } catch _ {
+            }
+            do {
+                try manager.copyItemAtPath(appPath! + "/Documents/Inbox/", toPath: interestingPath + "/Inbox")
+            } catch _ {
+            }
         }
     }
 }
@@ -163,8 +175,14 @@ class HiddenPhoto: ForensicsModule, ForensicsModuleProtocol {
         let hiddenPhotoPath = pathForApplication(identifier: "com.aromdee.HiddenPhoto")
         if (hiddenPhotoPath != nil)
         {
-            manager.createDirectoryAtPath(bundle.interestingDirectory + "/Private Photo", withIntermediateDirectories: false, attributes: nil, error: nil)
-            manager.copyItemAtPath(hiddenPhotoPath! + "/Documents/Album", toPath: bundle.interestingDirectory + "/Private Photo/Album", error: nil)
+            do {
+                try manager.createDirectoryAtPath(bundle.interestingDirectory + "/Private Photo", withIntermediateDirectories: false, attributes: nil)
+            } catch _ {
+            }
+            do {
+                try manager.copyItemAtPath(hiddenPhotoPath! + "/Documents/Album", toPath: bundle.interestingDirectory + "/Private Photo/Album")
+            } catch _ {
+            }
         }
     }
 }
@@ -177,21 +195,30 @@ class VoiceRecordings: ForensicsModule, ForensicsModuleProtocol {
         let path = bundle.originalDirectory + "MediaDomain/Media/Recordings/"
         let outputPath = bundle.interestingDirectory + "Voice Recordings/"
 
-        let files = manager.contentsOfDirectoryAtPath(path, error: nil) as? [String]
+        
 
-        if (files != nil)
+        if let files = (try? manager.contentsOfDirectoryAtPath(path)) as [String]?
         {
-            for file in files!
+            for file in files
             {
                 if (file.rangeOfString(".m4a") != nil)
                 {
                     if (!manager.fileExistsAtPath(outputPath))
                     {
-                        manager.createDirectoryAtPath(outputPath, withIntermediateDirectories: false, attributes: nil, error: nil)
-                        manager.copyItemAtPath(path + "AssetManifest.plist", toPath: outputPath + "AssetManifest.plist", error: nil)
+                        do {
+                            try manager.createDirectoryAtPath(outputPath, withIntermediateDirectories: false, attributes: nil)
+                        } catch _ {
+                        }
+                        do {
+                            try manager.copyItemAtPath(path + "AssetManifest.plist", toPath: outputPath + "AssetManifest.plist")
+                        } catch _ {
+                        }
                     }
 
-                    manager.copyItemAtPath(path + file, toPath: outputPath + file, error: nil)
+                    do {
+                        try manager.copyItemAtPath(path + file, toPath: outputPath + file)
+                    } catch _ {
+                    }
                 }
             }
         }
@@ -220,8 +247,14 @@ class PhoneRecords: ForensicsModule, ForensicsModuleProtocol {
 
     func analyze() {
         let path = bundle.interestingDirectory + "/Phone Records/"
-        manager.createDirectoryAtPath(path, withIntermediateDirectories: false, attributes: nil, error: nil)
-        manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/CallHistoryDB/CallHistory.storedata", toPath: path + "CallHistory.sqlite", error: nil)
+        do {
+            try manager.createDirectoryAtPath(path, withIntermediateDirectories: false, attributes: nil)
+        } catch _ {
+        }
+        do {
+            try manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/CallHistoryDB/CallHistory.storedata", toPath: path + "CallHistory.sqlite")
+        } catch _ {
+        }
     }
 }
 
@@ -230,7 +263,10 @@ class Calendar: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["???"] //find calender identifier
 
     func analyze() {
-        manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/Calendar", toPath: bundle.interestingDirectory + "/Calendar", error: nil)
+        do {
+            try manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/Calendar", toPath: bundle.interestingDirectory + "/Calendar")
+        } catch _ {
+        }
     }
 }
 
@@ -239,7 +275,10 @@ class Contacts: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["???"] //find contacts identifier
 
     func analyze() {
-        manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/AddressBook/", toPath: bundle.interestingDirectory + "/Contacts/", error: nil)
+        do {
+            try manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/AddressBook/", toPath: bundle.interestingDirectory + "/Contacts/")
+        } catch _ {
+        }
     }
 }
 
@@ -248,7 +287,10 @@ class Accounts: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["N/A"]
 
     func analyze() {
-        manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/Accounts/", toPath: bundle.interestingDirectory + "/Accounts", error: nil)
+        do {
+            try manager.copyItemAtPath(bundle.originalDirectory + "/HomeDomain/Library/Accounts/", toPath: bundle.interestingDirectory + "/Accounts")
+        } catch _ {
+        }
     }
 }
 
@@ -257,7 +299,10 @@ class SMSAttachments: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["???"] //find messages identifier
 
     func analyze() {
-        manager.copyItemAtPath(bundle.originalDirectory + "/MediaDomain/Library/SMS/Attachments/", toPath: bundle.interestingDirectory + "/SMS Attachments/", error: nil)
+        do {
+            try manager.copyItemAtPath(bundle.originalDirectory + "/MediaDomain/Library/SMS/Attachments/", toPath: bundle.interestingDirectory + "/SMS Attachments/")
+        } catch _ {
+        }
     }
 }
 
@@ -359,7 +404,10 @@ class MobileSafari: ForensicsModule, ForensicsModuleProtocol {
         let safariPath = pathForApplication(identifier: "com.apple.mobilesafari")
         if (safariPath != nil)
         {
-            manager.copyItemAtPath(safariPath! + "/Library/WebKit/WebsiteData/LocalStorage/", toPath: bundle.interestingDirectory + "/Safari/LocalStorage", error: nil)
+            do {
+                try manager.copyItemAtPath(safariPath! + "/Library/WebKit/WebsiteData/LocalStorage/", toPath: bundle.interestingDirectory + "/Safari/LocalStorage")
+            } catch _ {
+            }
         }
     }
 
@@ -400,11 +448,15 @@ class BTSync: ForensicsModule, ForensicsModuleProtocol {
         if (btSyncPath != nil)
         {
             var error: NSError?
-            manager.copyItemAtPath(btSyncPath! + "/Documents/Storage/", toPath: createInterestingDirectory("BTSync") + "/SyncedFiles", error: &error)
+            do {
+                try manager.copyItemAtPath(btSyncPath! + "/Documents/Storage/", toPath: createInterestingDirectory("BTSync") + "/SyncedFiles")
+            } catch var error1 as NSError {
+                error = error1
+            }
 
             if (error != nil)
             {
-                println(error)
+                print(error)
             }
         }
     }
@@ -430,7 +482,10 @@ class PhotoVault: ForensicsModule, ForensicsModuleProtocol {
 
                     let albumsPath = createInterestingDirectory("PhotoVault/Albums/")
 
-                    manager.copyItemAtPath(path! + "/Library/" + (album["path"]! as! String), toPath: albumsPath + albumName, error: nil)
+                    do {
+                        try manager.copyItemAtPath(path! + "/Library/" + (album["path"]! as! String), toPath: albumsPath + albumName)
+                    } catch _ {
+                    }
 
                     if let password = (album["password"] as? String)
                     {
@@ -467,10 +522,13 @@ class Evernote: ForensicsModule, ForensicsModuleProtocol {
             let interestingPath = createInterestingDirectory("/Evernote/")
 
             var notesPath = path! + "/Library/Private Documents/www.evernote.com/"
-            let contents = manager.contentsOfDirectoryAtPath(notesPath, error: nil)! as! [String]
+            let contents = (try! manager.contentsOfDirectoryAtPath(notesPath)) as! [String]
             notesPath += contents[0] + "/content/"
 
-            manager.copyItemAtPath(notesPath, toPath: interestingPath + "/Notes", error: nil)
+            do {
+                try manager.copyItemAtPath(notesPath, toPath: interestingPath + "/Notes")
+            } catch _ {
+            }
         }
     }
 }
@@ -622,10 +680,10 @@ class FacebookSDKTokens: ForensicsModule, ForensicsModuleProtocol {
     let appIdentifiers = ["*"]
 
     func analyze() {
-        let apps = manager.contentsOfDirectoryAtPath(bundle.originalDirectory + "/Applications/", error: nil) as? [String]
-        if (apps != nil)
+        
+        if let apps = (try? manager.contentsOfDirectoryAtPath(bundle.originalDirectory + "/Applications/")) as [String]?
         {
-            for app in apps! {
+            for app in apps {
                 pullFacebookAccessTokenFromApp(identifier: app)
             }
         }

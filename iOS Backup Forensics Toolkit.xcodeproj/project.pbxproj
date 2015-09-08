@@ -225,7 +225,9 @@
 		0D1019AC1A2B7DD100E4D082 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Garrett Davidson";
 				TargetAttributes = {
 					0D1019B31A2B7DD100E4D082 = {
@@ -372,6 +374,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -440,6 +443,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "A-Programmer-s-Crucible.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "iOS Backup Forensics Toolkit/iOS-Backup-Forensics-Toolkit-Bridging-Header.h";
 			};
@@ -456,6 +460,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "A-Programmer-s-Crucible.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "iOS Backup Forensics Toolkit/iOS-Backup-Forensics-Toolkit-Bridging-Header.h";
 			};
@@ -476,6 +481,7 @@
 				);
 				INFOPLIST_FILE = "iOS Backup Forensics ToolkitTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "A-Programmer-s-Crucible.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iOS Backup Forensics Toolkit.app/Contents/MacOS/iOS Backup Forensics Toolkit";
 			};
@@ -492,6 +498,7 @@
 				);
 				INFOPLIST_FILE = "iOS Backup Forensics ToolkitTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "A-Programmer-s-Crucible.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iOS Backup Forensics Toolkit.app/Contents/MacOS/iOS Backup Forensics Toolkit";
 			};

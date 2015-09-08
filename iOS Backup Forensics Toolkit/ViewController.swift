@@ -142,7 +142,7 @@ class ViewController: NSViewController {
     }
 
     func retrieveBundles(path: String) -> [NSBundle] {
-        let bundleDirectoryPaths = path == "" ? [String]() : manager.contentsOfDirectoryAtPath(path, error: nil) as! [String]
+        let bundleDirectoryPaths = path == "" ? [String]() : (try! manager.contentsOfDirectoryAtPath(path)) 
 
         var bundles = [NSBundle]()
         for bundlePath in bundleDirectoryPaths
@@ -175,7 +175,10 @@ class ViewController: NSViewController {
             self.sectionLabel.stringValue = "Analyzing"
         })
 
-        self.manager.createDirectoryAtPath(self.interestingDirectory, withIntermediateDirectories: false, attributes: nil, error: nil)
+        do {
+            try self.manager.createDirectoryAtPath(self.interestingDirectory, withIntermediateDirectories: false, attributes: nil)
+        } catch _ {
+        }
 
         self.beginAnalyzing()
 
@@ -282,13 +285,25 @@ class ViewController: NSViewController {
         //check isEncrypted in Manifest.plist
 
         var error: NSError?
-        manager.createDirectoryAtPath(originalDirectory, withIntermediateDirectories: true, attributes: nil, error: &error)
-        manager.createDirectoryAtPath(interestingDirectory, withIntermediateDirectories: true, attributes: nil, error: &error)
-        manager.copyItemAtPath(path, toPath: rootDirectory + "/Info.plist", error: &error)
+        do {
+            try manager.createDirectoryAtPath(originalDirectory, withIntermediateDirectories: true, attributes: nil)
+        } catch let error1 as NSError {
+            error = error1
+        }
+        do {
+            try manager.createDirectoryAtPath(interestingDirectory, withIntermediateDirectories: true, attributes: nil)
+        } catch let error1 as NSError {
+            error = error1
+        }
+        do {
+            try manager.copyItemAtPath(path, toPath: rootDirectory + "/Info.plist")
+        } catch let error1 as NSError {
+            error = error1
+        }
 
         if (error != nil)
         {
-            println(error)
+            print(error)
         }
     }
 
@@ -345,7 +360,7 @@ class ModuleSelectionViewController: NSViewController, NSTableViewDelegate, NSTa
                 return returnString
 
             case "Description":
-                return modules[row].description()
+                return modules[row].descriptionM()
 
             default:
                 return nil
